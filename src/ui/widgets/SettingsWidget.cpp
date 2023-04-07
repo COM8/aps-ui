@@ -113,13 +113,6 @@ void SettingsWidget::prep_widget() {
     contentBox->append(*openWeatherApiKeyLabel);
     openWeatherApiKey.set_placeholder_text("API Key");
     contentBox->append(openWeatherApiKey);
-
-    // Actions:
-    Gtk::Label* actionsSectionLabel = Gtk::make_managed<Gtk::Label>();
-    actionsSectionLabel->set_markup("<span font_weight='bold'>Actions</span>");
-    actionsSectionLabel->set_halign(Gtk::Align::START);
-    actionsSectionLabel->set_margin_top(10);
-    contentBox->append(*actionsSectionLabel);
 }
 
 void SettingsWidget::load_settings() {
