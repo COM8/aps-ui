@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ui/widgets/ActionsWidget.hpp"
 #include "ui/widgets/DbWidget.hpp"
 #include "ui/widgets/DeviceStatusWidget.hpp"
 #include "ui/widgets/LightningMap.hpp"
@@ -21,7 +20,6 @@ class MainWindow : public Gtk::Window {
     Gtk::Button inspectorBtn;
     widgets::DbWidget db{};
     widgets::WeatherWidget weather{};
-    widgets::ActionsWidget actions{};
     widgets::DeviceStatusWidget deviceStatus{};
     widgets::SettingsWidget settings{};
     Gtk::Button fullscreenBtn{};

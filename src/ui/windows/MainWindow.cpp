@@ -61,7 +61,7 @@ void MainWindow::prep_overview_stack_page(Gtk::Stack* stack) {
     mainBox->append(*leftBox);
     leftBox->set_homogeneous(false);
     leftBox->set_vexpand(true);
-    leftBox->append(actions);
+    // leftBox->append(actions);
     Gtk::Box* leftBottomBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
     leftBox->append(*leftBottomBox);
     leftBottomBox->append(deviceStatus);

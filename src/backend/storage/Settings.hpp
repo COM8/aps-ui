@@ -20,17 +20,17 @@ struct SettingsData {
     std::string dbStationId = "8003022";
     int dbLookAheadCount = 150;
     int dbLookBehindCount = 10;
-    std::string dbDestRegex{"Garching, Forschungszentrum"};
+    std::string dbDestRegex{"Stuttgart"};
     bool dbDestRegexEnabled = true;
-    std::string dbStopsAtRegex{"Goldberg"};
+    std::string dbStopsAtRegex{"Hulb"};
     bool dbStopsAtRegexEnabled = true;
     bool dbFilterDepartedTrains = true;
 
     /**
      * The open weather map location for the weather forecast. 
      **/
-    std::string weatherLat{"48.137154"};
-    std::string weatherLong{"11.576124"};
+    std::string weatherLat{"48.6776015"};
+    std::string weatherLong{"8.9790004"};
     std::string openWeatherApiKey{"https://openweathermap.org/price"};
 
     /**
@@ -39,20 +39,12 @@ struct SettingsData {
     std::vector<std::string> devices;
 
     /**
-     * The Aps Assistent (hass) configuration and devices.
-     **/
-    std::string hassIp{"IP of your hass installation"};
-    std::string hassPort{"8123"};
-    std::string hassBearerToken{"Your hass bearer token"};
-    std::vector<std::string> hassLights;
-
-    /**
      * Lightning map configuration.
      **/
-    double lightningMapCenterLat{48.137154};
-    double lightningMapCenterLong{11.576124};
-    double lightningMapApsLat{48.137154};
-    double lightningMapApsLong{11.576124};
+    double lightningMapCenterLat{48.6776015};
+    double lightningMapCenterLong{8.9790004};
+    double lightningMapApsLat{48.6776015};
+    double lightningMapApsLong{8.9790004};
     double lightningMapZoomLevel{11};
 
 } __attribute__((aligned(128)));

@@ -22,11 +22,6 @@ void to_json(nlohmann::json& j, const SettingsData& d) {
 
         {"devices", d.devices},
 
-        {"hassIp", d.hassIp},
-        {"hassPort", d.hassPort},
-        {"hassBearerToken", d.hassBearerToken},
-        {"hassLights", d.hassLights},
-
         {"lightningMapCenterLat", d.lightningMapCenterLat},
         {"lightningMapCenterLong", d.lightningMapCenterLong},
         {"lightningMapApsLat", d.lightningMapApsLat},
@@ -49,11 +44,6 @@ void from_json(const nlohmann::json& j, SettingsData& d) {
     j.at("openWeatherApiKey").get_to(d.openWeatherApiKey);
 
     j.at("devices").get_to(d.devices);
-
-    j.at("hassIp").get_to(d.hassIp);
-    j.at("hassPort").get_to(d.hassPort);
-    j.at("hassBearerToken").get_to(d.hassBearerToken);
-    j.at("hassLights").get_to(d.hassLights);
 
     j.at("lightningMapCenterLat").get_to(d.lightningMapCenterLat);
     j.at("lightningMapCenterLong").get_to(d.lightningMapCenterLong);
