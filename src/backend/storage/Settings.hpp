@@ -29,8 +29,8 @@ struct SettingsData {
     /**
      * The open weather map location for the weather forecast. 
      **/
-    std::string weatherLat{"48.6776015"};
-    std::string weatherLong{"8.9790004"};
+    std::string weatherLat{"48.6777281"};
+    std::string weatherLong{"8.9795143"};
     std::string openWeatherApiKey{"https://openweathermap.org/price"};
 
     /**
@@ -41,11 +41,11 @@ struct SettingsData {
     /**
      * Lightning map configuration.
      **/
-    double lightningMapCenterLat{48.6776015};
-    double lightningMapCenterLong{8.9790004};
-    double lightningMapApsLat{48.6776015};
-    double lightningMapApsLong{8.9790004};
-    double lightningMapZoomLevel{11};
+    double lightningMapCenterLat{48.6777281};
+    double lightningMapCenterLong{8.9795143};
+    double lightningMapApsLat{48.6777281};
+    double lightningMapApsLong{8.9795143};
+    double lightningMapZoomLevel{13};
 
 } __attribute__((aligned(128)));
 
