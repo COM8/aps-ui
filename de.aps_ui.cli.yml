@@ -1,27 +1,27 @@
-app-id: de.home_ui.cli
+app-id: de.aps_ui.cli
 runtime: org.gnome.Platform
 runtime-version: '43'
 sdk: org.gnome.Sdk
-command: home_ui
+command: aps_ui
 finish-args:
   - --share=ipc
   - --socket=fallback-x11
   - --socket=wayland
   - --socket=session-bus
   - --share=network
-  - --own-name=de.home_ui.cli
+  - --own-name=de.aps_ui.cli
   - --device=dri
-  - --filesystem=home
+  - --filesystem=aps
   - --filesystem=host
   - --filesystem=/sys/class/backlight/rpi_backlight
 modules:
-  - name: home_ui
+  - name: aps_ui
     buildsystem: cmake-ninja
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
-      - -DHOME_UI_STATIC_ANALYZE=OFF
-      - -DHOME_UI_ENABLE_LINTING=OFF
-      - -DHOME_UI_FLATPAK_BUILD=ON
+      - -DAPS_UI_STATIC_ANALYZE=OFF
+      - -DAPS_UI_ENABLE_LINTING=OFF
+      - -DAPS_UI_FLATPAK_BUILD=ON
     sources:
       - type: dir
         path: .
@@ -30,7 +30,7 @@ modules:
       - type: patch
         path: flatpak/patches/libshumate_lib_name.patch
     post-install:
-      - install -D de.home_ui.cli.appdata.xml /app/share/metainfo/de.home_ui.cli.appdata.xml
+      - install -D de.aps_ui.cli.appdata.xml /app/share/metainfo/de.aps_ui.cli.appdata.xml
     modules:
       - name: cpr
         buildsystem: cmake-ninja

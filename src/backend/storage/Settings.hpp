@@ -39,7 +39,7 @@ struct SettingsData {
     std::vector<std::string> devices;
 
     /**
-     * The Home Assistent (hass) configuration and devices.
+     * The Aps Assistent (hass) configuration and devices.
      **/
     std::string hassIp{"IP of your hass installation"};
     std::string hassPort{"8123"};
@@ -51,8 +51,8 @@ struct SettingsData {
      **/
     double lightningMapCenterLat{48.137154};
     double lightningMapCenterLong{11.576124};
-    double lightningMapHomeLat{48.137154};
-    double lightningMapHomeLong{11.576124};
+    double lightningMapApsLat{48.137154};
+    double lightningMapApsLong{11.576124};
     double lightningMapZoomLevel{11};
 
 } __attribute__((aligned(128)));

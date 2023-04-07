@@ -19,16 +19,16 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Windows" AND NOT ${CMAKE_RC_COMPILER})
         set(ICON_FILE ${CMAKE_SOURCE_DIR}/resources/papersearch.ico)
         set(EXEC_NAME $<TARGET_FILE:${MAIN_EXECUTABLE}>)
         configure_file (
-            "home_ui_res_header.h.in"
-            "${CMAKE_CURRENT_BINARY_DIR}/home_ui_res_header.h"
+            "aps_ui_res_header.h.in"
+            "${CMAKE_CURRENT_BINARY_DIR}/aps_ui_res_header.h"
         )
-        target_sources(${MAIN_EXECUTABLE} PRIVATE home_ui.rc)
-        set_property(SOURCE home_ui.rc PROPERTY INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR})
+        target_sources(${MAIN_EXECUTABLE} PRIVATE aps_ui.rc)
+        set_property(SOURCE aps_ui.rc PROPERTY INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR})
     else()
         message(WARNING "windres not initialized")
     endif()
 endif()
 
 target_link_libraries(${MAIN_EXECUTABLE} PRIVATE logger ui)
-set_property(SOURCE main.cpp PROPERTY COMPILE_DEFINITIONS HOME_UI_VERSION="${PROJECT_VERSION}" HOME_UI_VERSION_NAME="${VERSION_NAME}")
+set_property(SOURCE main.cpp PROPERTY COMPILE_DEFINITIONS APS_UI_VERSION="${PROJECT_VERSION}" APS_UI_VERSION_NAME="${VERSION_NAME}")
 install(TARGETS ${MAIN_EXECUTABLE} RUNTIME DESTINATION)

@@ -14,9 +14,9 @@ namespace ui::widgets {
 class LightningMap : public Gtk::Box {
  private:
     ShumateSimpleMap* map{nullptr};
-    ShumateMarker* homeMarker{nullptr};
+    ShumateMarker* apsMarker{nullptr};
     ShumateMarkerLayer* markerLayer{nullptr};
-    Gtk::Image homeMarkerImage{};
+    Gtk::Image apsMarkerImage{};
     std::list<LightningWidget> lightningMarkers{};
     std::vector<backend::lightning::Lightning> toAddLightnings;
     std::mutex lightningMarkersMutex{};

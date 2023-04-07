@@ -29,8 +29,8 @@ void to_json(nlohmann::json& j, const SettingsData& d) {
 
         {"lightningMapCenterLat", d.lightningMapCenterLat},
         {"lightningMapCenterLong", d.lightningMapCenterLong},
-        {"lightningMapHomeLat", d.lightningMapHomeLat},
-        {"lightningMapHomeLong", d.lightningMapHomeLong},
+        {"lightningMapApsLat", d.lightningMapApsLat},
+        {"lightningMapApsLong", d.lightningMapApsLong},
         {"lightningMapZoomLevel", d.lightningMapZoomLevel}};
 }
 
@@ -57,8 +57,8 @@ void from_json(const nlohmann::json& j, SettingsData& d) {
 
     j.at("lightningMapCenterLat").get_to(d.lightningMapCenterLat);
     j.at("lightningMapCenterLong").get_to(d.lightningMapCenterLong);
-    j.at("lightningMapHomeLat").get_to(d.lightningMapHomeLat);
-    j.at("lightningMapHomeLong").get_to(d.lightningMapHomeLong);
+    j.at("lightningMapApsLat").get_to(d.lightningMapApsLat);
+    j.at("lightningMapApsLong").get_to(d.lightningMapApsLong);
     j.at("lightningMapZoomLevel").get_to(d.lightningMapZoomLevel);
 }
 }  // namespace backend::storage

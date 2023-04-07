@@ -25,7 +25,7 @@ void Settings::write_settings() {
 }
 
 Settings* get_settings_instance() {
-    static Settings settingsInstance("home_ui_settings.json");
+    static Settings settingsInstance("aps_ui_settings.json");
     return &settingsInstance;
 }
 }  // namespace backend::storage

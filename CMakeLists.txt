@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(PROJECT_DESCRIPTION "GTK3 Based UI for home automation using a Raspberry Pi. ")
+set(PROJECT_DESCRIPTION "GTK4 Based UI for Stats all Around AP Sensing in Böblingen using a Raspberry Pi.")
 
-project("home_ui" VERSION 1.0.0
+project("aps_ui"  VERSION 1.0.0
                   DESCRIPTION "${PROJECT_DESCRIPTION}"
-                  HOMEPAGE_URL "https://github.com/COM8/home-ui")
+                  HOMEPAGE_URL "https://github.com/COM8/aps-ui")
 set(VERSION_NAME "dev")
 
 set(CMAKE_CXX_STANDARD 20)
@@ -15,7 +15,7 @@ if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
     cmake_policy(SET CMP0135 NEW)
 endif()
 
-macro(home_ui_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
+macro(aps_ui_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
     option(${OPTION_NAME} ${OPTION_TEXT} ${OPTION_DEFAULT})
 
     if(DEFINED ENV{${OPTION_NAME}})
@@ -30,11 +30,11 @@ macro(home_ui_option OPTION_NAME OPTION_TEXT OPTION_DEFAULT)
     message(STATUS "  ${OPTION_NAME}: ${${OPTION_NAME}}")
 endmacro()
 
-message(STATUS "C++ Home UI Options")
+message(STATUS "C++ Aps UI Options")
 message(STATUS "=======================================================")
-home_ui_option(HOME_UI_STATIC_ANALYZE "Set to ON to enable the GCC 10 static analysis. If enabled, HOME_UI_ENABLE_LINTING has to be disabled." OFF)
-home_ui_option(HOME_UI_ENABLE_LINTING "Set to ON to enable clang linting. If enabled, HOME_UI_STATIC_ANALYZE has to be disabled." OFF)
-home_ui_option(HOME_UI_FLATPAK_BUILD "Set to ON in case it is built for flatpak." OFF)
+aps_ui_option(APS_UI_STATIC_ANALYZE "Set to ON to enable the GCC 10 static analysis. If enabled, APS_UI_ENABLE_LINTING has to be disabled." OFF)
+aps_ui_option(APS_UI_ENABLE_LINTING "Set to ON to enable clang linting. If enabled, APS_UI_STATIC_ANALYZE has to be disabled." OFF)
+aps_ui_option(APS_UI_FLATPAK_BUILD "Set to ON in case it is built for flatpak." OFF)
 message(STATUS "=======================================================")
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
@@ -47,15 +47,15 @@ include(glib-resource-compiler)
 include(clear_variable)
 include(FetchContent)
 
-if(${HOME_UI_ENABLE_LINTING})
+if(${APS_UI_ENABLE_LINTING})
     message(STATUS "Enabling linting")
     include(clang-tidy)
 else()
     message(STATUS "Linting is disabled")
 endif()
 
-if(HOME_UI_FLATPAK_BUILD)
-    add_compile_definitions(HOME_UI_FLATPAK_BUILD=1)
+if(APS_UI_FLATPAK_BUILD)
+    add_compile_definitions(APS_UI_FLATPAK_BUILD=1)
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")

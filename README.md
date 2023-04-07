@@ -1,5 +1,5 @@
-# Home-UI
-GTK4 Based UI for home automation using a Raspberry Pi.
+# Aps-UI
+GTK4 Based UI for Stats all Around AP Sensing in Böblingen using a Raspberry Pi.
 
 ## Examples
 ![Overview in dark mode](images/overview_dark.png)
@@ -15,8 +15,8 @@ sudo dnf install libsoup3-devel sqlite-devel ninja-build
 
 ### Building
 ```
-git clone https://github.com/COM8/home-ui.git
-cd home-ui
+git clone https://github.com/COM8/aps-ui.git
+cd aps-ui
 mkdir build
 cd build
 cmake ..
@@ -24,7 +24,7 @@ cmake --build .
 ```
 
 ## Flatpak
-The home-ui can be built and installed using Flatpak.
+The aps-ui can be built and installed using Flatpak.
 
 ### Requirements
 #### Fedora
@@ -44,14 +44,14 @@ flatpak install flathub org.gnome.Sdk/43 org.gnome.Platform/43
 ### Building
 Add `--jobs=1` to the `flatpak-builder` command when building on a Raspberry Pi to prevent running out of RAM.
 ```
-git clone https://github.com/COM8/home-ui.git
-cd home-ui
-flatpak-builder --force-clean flatpak_build_dir de.home_ui.cli.yml
+git clone https://github.com/COM8/aps-ui.git
+cd aps-ui
+flatpak-builder --force-clean flatpak_build_dir de.aps_ui.cli.yml
 ```
 
 ### Installing
 ```
-flatpak-builder --user --install --force-clean flatpak_build_dir de.home_ui.cli.yml
+flatpak-builder --user --install --force-clean flatpak_build_dir de.aps_ui.cli.yml
 ```
 
 ### Cross-Compiling
@@ -61,20 +61,20 @@ sudo dnf install qemu-system-arm qemu-user-static
 sudo systemctl restart systemd-binfmt.service
 
 flatpak install flathub org.gnome.Sdk/aarch64/42 org.gnome.Platform/aarch64/42
-flatpak-builder --arch=aarch64 --repo=repo --force-clean flatpak_build_dir de.home_ui.cli.yml
-flatpak build-bundle --arch=aarch64 ./repo/ de.home_ui.cli.flatpak de.home_ui.cli
+flatpak-builder --arch=aarch64 --repo=repo --force-clean flatpak_build_dir de.aps_ui.cli.yml
+flatpak build-bundle --arch=aarch64 ./repo/ de.aps_ui.cli.flatpak de.aps_ui.cli
 
 # Copy the "repo" dir to the target system
-flatpak --user remote-add --no-gpg-verify home-ui-repo repo
-flatpak --user install home-ui-repo de.home_ui.cli
+flatpak --user remote-add --no-gpg-verify aps-ui-repo repo
+flatpak --user install aps-ui-repo de.aps_ui.cli
 ```
 
 ### Uninstalling
 ```
-flatpak uninstall de.home_ui.cli
+flatpak uninstall de.aps_ui.cli
 ```
 
 ### Executing
 ```
-flatpak run de.home_ui.cli
+flatpak run de.aps_ui.cli
 ```

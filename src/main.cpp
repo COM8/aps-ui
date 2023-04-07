@@ -3,7 +3,7 @@
 
 int main(int argc, char** argv) {
     logger::setup_logger(spdlog::level::debug);
-    SPDLOG_INFO("Launching Version: {} {}", HOME_UI_VERSION, HOME_UI_VERSION_NAME);
+    SPDLOG_INFO("Launching Version: {} {}", APS_UI_VERSION, APS_UI_VERSION_NAME);
 
     // The UI context manages everything that is UI related.
     // It will return once all windows have been terminated.

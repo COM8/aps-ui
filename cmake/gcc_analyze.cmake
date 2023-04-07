@@ -1,8 +1,8 @@
 include(CheckCXXCompilerFlag)
 
-if(HOME_UI_STATIC_ANALYZE)
-    if(HOME_UI_ENABLE_LINTING)
-        message(FATAL_ERROR "Linting and the GCC static analysis can not be enabled at the same time! Disable either HOME_UI_STATIC_ANALYZE or HOME_UI_ENABLE_LINTING.")
+if(APS_UI_STATIC_ANALYZE)
+    if(APS_UI_ENABLE_LINTING)
+        message(FATAL_ERROR "Linting and the GCC static analysis can not be enabled at the same time! Disable either APS_UI_STATIC_ANALYZE or APS_UI_ENABLE_LINTING.")
     endif()
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         check_cxx_compiler_flag("-fanalyzer" HAS_GCC_STATIC_ANALYZER)

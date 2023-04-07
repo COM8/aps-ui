@@ -15,7 +15,7 @@ MainWindow::MainWindow() : screenBrightnessBtn(32, 255, 1) {
 }
 
 void MainWindow::prep_window() {
-    set_title("Home UI");
+    set_title("Aps UI");
     set_default_size(800, 480);
 
     // Keyboard events:

@@ -40,19 +40,19 @@ void LightningMap::prep_widget() {
     ShumateMapSource* source = shumate_map_source_registry_get_by_id(registry, SHUMATE_MAP_SOURCE_OSM_MAPNIK);
     shumate_simple_map_set_map_source(map, source);
 
-    // Add home marker:
+    // Add aps marker:
     ShumateViewport* viewPort = shumate_simple_map_get_viewport(map);
     markerLayer = shumate_marker_layer_new(viewPort);
     shumate_simple_map_add_overlay_layer(map, SHUMATE_LAYER(markerLayer));
 
-    homeMarker = shumate_marker_new();
-    ShumateLocation* markerLocation = SHUMATE_LOCATION(homeMarker);
-    shumate_location_set_location(markerLocation, settings->data.lightningMapHomeLat, settings->data.lightningMapHomeLong);
-    shumate_marker_layer_add_marker(markerLayer, homeMarker);
+    apsMarker = shumate_marker_new();
+    ShumateLocation* markerLocation = SHUMATE_LOCATION(apsMarker);
+    shumate_location_set_location(markerLocation, settings->data.lightningMapApsLat, settings->data.lightningMapApsLong);
+    shumate_marker_layer_add_marker(markerLayer, apsMarker);
 
-    homeMarkerImage.set_from_icon_name("lightning-map-marker-symbolic");
+    apsMarkerImage.set_from_icon_name("lightning-map-marker-symbolic");
     // NOLINTNEXTLINE (cppcoreguidelines-pro-type-cstyle-cast)
-    shumate_marker_set_child(homeMarker, GTK_WIDGET(homeMarkerImage.gobj()));
+    shumate_marker_set_child(apsMarker, GTK_WIDGET(apsMarkerImage.gobj()));
 
     // Zoom to marker:
     shumate_location_set_location(SHUMATE_LOCATION(viewPort), settings->data.lightningMapCenterLat, settings->data.lightningMapCenterLong);

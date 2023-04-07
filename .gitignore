@@ -42,7 +42,7 @@ compile_commands.json
 .vscode/
 
 # Ignore serialized stuff
-home_ui_settings.json
+aps_ui_settings.json
 
 #Flatpak
 flatpak_build_dir/
