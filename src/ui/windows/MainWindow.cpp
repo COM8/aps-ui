@@ -55,13 +55,13 @@ void MainWindow::prep_overview_stack_page(Gtk::Stack* stack) {
     mainBox->set_vexpand(true);
     mainBox->set_homogeneous(true);
 
-    // Actions:
+    // GitLab:
     Gtk::Box* leftBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
     leftBox->set_vexpand(true);
     mainBox->append(*leftBox);
     leftBox->set_homogeneous(false);
     leftBox->set_vexpand(true);
-    // leftBox->append(actions);
+    leftBox->append(plot);
     Gtk::Box* leftBottomBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
     leftBox->append(*leftBottomBox);
     leftBottomBox->append(deviceStatus);

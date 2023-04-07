@@ -5,6 +5,7 @@
 #include "ui/widgets/LightningMap.hpp"
 #include "ui/widgets/SettingsWidget.hpp"
 #include "ui/widgets/WeatherWidget.hpp"
+#include "ui/widgets/gitlab/PlotWidget.hpp"
 #include <gtkmm.h>
 #include <gtkmm/box.h>
 #include <gtkmm/button.h>
@@ -28,6 +29,7 @@ class MainWindow : public Gtk::Window {
     Gtk::ScaleButton screenBrightnessBtn;
     Gtk::Box quickActionsBox{Gtk::Orientation::HORIZONTAL};
     widgets::LightningMap lightning{};
+    widgets::gitlab::PlotWidget plot{};
 
  public:
     MainWindow();

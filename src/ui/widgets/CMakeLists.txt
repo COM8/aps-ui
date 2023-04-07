@@ -17,3 +17,5 @@ add_library(ui_widgets DbWidget.cpp
 
 target_link_libraries(ui_widgets PUBLIC PkgConfig::GTKMM backend_weather backend_deviceStatus
                                  PRIVATE logger backend_storage ui_utils re2::re2 libshumate backend_lightning backend_db date::date date::date-tz)
+
+add_subdirectory(gitlab)
