@@ -38,14 +38,18 @@ DbWidget::~DbWidget() {
 }
 
 void DbWidget::prep_widget() {
+    add_css_class("card");
+    set_overflow(Gtk::Overflow::HIDDEN);
+    set_margin(6);
+    set_margin_start(3);
+
     Gtk::ScrolledWindow* scroll = Gtk::make_managed<Gtk::ScrolledWindow>();
     departureslistBox.set_selection_mode(Gtk::SelectionMode::NONE);
 
     // Transparent background:
     Glib::RefPtr<Gtk::CssProvider> provider = Gtk::CssProvider::create();
     departureslistBox.add_css_class("boxed-list");
-    departureslistBox.set_margin(6);
-    departureslistBox.set_margin_start(3);
+    departureslistBox.set_overflow(Gtk::Overflow::HIDDEN);
 
     scroll->set_child(departureslistBox);
     scroll->set_vexpand(true);
