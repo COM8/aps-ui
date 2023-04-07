@@ -1,5 +1,9 @@
 #include "PlotWidget.hpp"
+#include "logger/Logger.hpp"
 #include <algorithm>
+#include <cassert>
+#include <chrono>
+#include <cstddef>
 #include <random>
 #include <vector>
 #include <cairomm/context.h>
@@ -8,7 +12,14 @@
 namespace ui::widgets::gitlab {
 PlotWidget::PlotWidget() {
     prep_widget();
-    generate_data();
+    disp.connect(sigc::mem_fun(*this, &PlotWidget::on_notification_from_update_thread));
+    start_thread();
+}
+
+PlotWidget::~PlotWidget() {
+    if (shouldRun) {
+        stop_thread();
+    }
 }
 
 void PlotWidget::prep_widget() {
@@ -19,30 +30,12 @@ void PlotWidget::prep_widget() {
     set_hexpand();
     set_vexpand();
     set_overflow(Gtk::Overflow::HIDDEN);
-    set_margin(5);
+    set_margin(6);
+    set_margin_end(3);
     add_css_class("card");
 }
 
-void PlotWidget::generate_data() {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<double> dis(-3, 3);
-
-    for (std::tuple<std::vector<double>, Gdk::RGBA>& p : points) {
-        std::vector<double>& vec = std::get<0>(p);
-        vec.resize(2 * 60 * 60);
-        double d = 25 * (2 + dis(gen));
-        for (double& point : vec) {
-            d += dis(gen);
-            if (d < 0) {
-                d = 0;
-            }
-            point = d;
-        }
-    }
-}
-
-void PlotWidget::draw_grid(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height) {
+void PlotWidget::draw_grid(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height) const {
     ctx->set_line_width(2);
     ctx->set_source_rgba(GRID_COLOR.get_red(), GRID_COLOR.get_green(), GRID_COLOR.get_blue(), GRID_COLOR.get_alpha());
 
@@ -65,46 +58,122 @@ void PlotWidget::draw_grid(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
     }
 }
 
-void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height, const std::vector<double>& points, double maxVal, const Gdk::RGBA& color) {
+void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height, const pointArrType_t& points, double maxVal, const Gdk::RGBA& color) const {
+    if (curSize <= 0) {
+        return;
+    }
+
     double increment = static_cast<double>(width) / static_cast<double>(points.size());
     double maxHeight = static_cast<double>(height) * 0.95;
 
     // Line:
     ctx->set_line_width(2);
     ctx->set_line_join(Cairo::Context::LineJoin::ROUND);
-    ctx->move_to(0, height - (points[0] / maxVal * maxHeight));
+    ctx->move_to(0, height - (points[curIndex] / maxVal * maxHeight));
 
-    for (size_t i = 1; i < points.size(); i++) {
-        const double x = i >= points.size() - 1 ? width : static_cast<double>(i) * increment;
-        const double y = points[i] / maxVal * maxHeight;
+    size_t index = 0;
+    double x = 0;
+    for (size_t i = 1; i < curSize; i++) {
+        index = (curIndex + i) % MAX_POINT_COUNT;
+        x = static_cast<double>(i) * increment;
+        const double y = points[index] / maxVal * maxHeight;
         ctx->line_to(x, height - y);
     }
     ctx->set_source_rgba(color.get_red(), color.get_green(), color.get_blue(), color.get_alpha());
     ctx->stroke_preserve();
 
     // Polygon:
-    ctx->line_to(width, height);
+    ctx->line_to(x, height);
     ctx->line_to(0, height);
     ctx->close_path();
     ctx->set_source_rgba(color.get_red(), color.get_green(), color.get_blue(), color.get_alpha() * 0.3);
     ctx->fill();
 }
 
+void PlotWidget::update_data() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_real_distribution<double> dis(-1, 1);
+
+    pointsMutex.lock();
+
+    size_t prevIndex = 0;
+    if (curSize <= 0) {
+        curSize = 1;
+        curIndex = 0;
+    } else if (curSize >= MAX_POINT_COUNT) {
+        curSize = MAX_POINT_COUNT;
+        prevIndex = (curIndex - 1 + curSize) % MAX_POINT_COUNT;
+        curIndex = (curIndex + 1) % MAX_POINT_COUNT;
+    } else {
+        prevIndex = curSize - 1;
+        curSize++;
+    }
+
+    for (std::tuple<pointArrType_t, Gdk::RGBA>& p : points) {
+        pointArrType_t& arr = std::get<0>(p);
+
+        if (curSize <= 1) {
+            arr[0] = 50 * (1 + dis(gen));
+        } else {
+            size_t index = (curIndex + curSize - 1) % MAX_POINT_COUNT;
+            arr[index] = arr[prevIndex] + dis(gen);
+            if (arr[index] < 0) {
+                arr[index] = 0;
+            }
+        }
+    }
+    pointsMutex.unlock();
+    disp.emit();
+}
+
+void PlotWidget::thread_run() {
+    SPDLOG_INFO("GitLab thread started.");
+    while (shouldRun) {
+        update_data();
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
+    SPDLOG_INFO("GitLab thread stoped.");
+}
+
+void PlotWidget::start_thread() {
+    assert(!updateThread);
+    assert(!shouldRun);
+    shouldRun = true;
+    updateThread = std::make_unique<std::thread>(&PlotWidget::thread_run, this);
+}
+
+void PlotWidget::stop_thread() {
+    assert(updateThread);
+    assert(shouldRun);
+    shouldRun = false;
+    updateThread->join();
+    updateThread = nullptr;
+}
+
 //-----------------------------Events:-----------------------------
 void PlotWidget::on_draw_handler(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height) {
+    // Grid:
+    draw_grid(ctx, width, height);
+
+    // Points:
+    pointsMutex.lock();
     double maxVal = 0;
-    for (const std::tuple<std::vector<double>, Gdk::RGBA>& p : points) {
-        const std::vector<double>& vec = std::get<0>(p);
+    for (const std::tuple<pointArrType_t, Gdk::RGBA>& p : points) {
+        const pointArrType_t& vec = std::get<0>(p);
         const double tmp = *std::max_element(vec.begin(), vec.end());
         if (maxVal < tmp) {
             maxVal = tmp;
         }
     }
 
-    draw_grid(ctx, width, height);
-
-    for (const std::tuple<std::vector<double>, Gdk::RGBA>& p : points) {
+    for (const std::tuple<pointArrType_t, Gdk::RGBA>& p : points) {
         draw_data(ctx, width, height, std::get<0>(p), maxVal, std::get<1>(p));
     }
+    pointsMutex.unlock();
+}
+
+void PlotWidget::on_notification_from_update_thread() {
+    queue_draw();
 }
 }  // namespace ui::widgets::gitlab

@@ -35,7 +35,8 @@ Checks: '*,
 -bugprone-easily-swappable-parameters,
 -readability-identifier-length,
 -altera-unroll-loops,
--pro-bounds-constant-array-index
+-pro-bounds-constant-array-index,
+-cppcoreguidelines-pro-bounds-constant-array-index
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'
