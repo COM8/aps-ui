@@ -5,8 +5,8 @@ add_subdirectory(widgets)
 add_subdirectory(windows)
 add_subdirectory(resources)
 
-add_library(ui STATIC UiContext.hpp
-                      UiContext.cpp)
+add_library(ui UiContext.hpp
+               UiContext.cpp)
 
 # Propagate the variables upwards
 set(RESOURCE_DEF ${RESOURCE_DEF} PARENT_SCOPE)
