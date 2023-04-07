@@ -44,8 +44,8 @@ void DbWidget::prep_widget() {
     // Transparent background:
     Glib::RefPtr<Gtk::CssProvider> provider = Gtk::CssProvider::create();
     departureslistBox.add_css_class("boxed-list");
-    departureslistBox.set_margin_start(10);
-    departureslistBox.set_margin_end(10);
+    departureslistBox.set_margin(6);
+    departureslistBox.set_margin_start(3);
 
     scroll->set_child(departureslistBox);
     scroll->set_vexpand(true);

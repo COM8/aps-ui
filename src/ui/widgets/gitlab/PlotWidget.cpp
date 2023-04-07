@@ -75,7 +75,7 @@ void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
     double x = 0;
     for (size_t i = 1; i < curSize; i++) {
         index = (curIndex + i) % MAX_POINT_COUNT;
-        x = static_cast<double>(i) * increment;
+        x = curSize >= MAX_POINT_COUNT && i + 1 >= curSize ? width : static_cast<double>(i) * increment;
         const double y = points[index] / maxVal * maxHeight;
         ctx->line_to(x, height - y);
     }

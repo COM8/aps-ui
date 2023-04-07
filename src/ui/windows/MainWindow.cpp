@@ -6,6 +6,7 @@
 #include <gdkmm/cursor.h>
 #include <gtkmm/adjustment.h>
 #include <gtkmm/enums.h>
+#include <gtkmm/grid.h>
 #include <gtkmm/window.h>
 #include <spdlog/spdlog.h>
 
@@ -49,21 +50,18 @@ void MainWindow::prep_window() {
 }
 
 void MainWindow::prep_overview_stack_page(Gtk::Stack* stack) {
-    Gtk::Box* mainBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
-    mainBox->set_halign(Gtk::Align::FILL);
-    mainBox->set_valign(Gtk::Align::FILL);
-    mainBox->set_vexpand(true);
-    mainBox->set_homogeneous(true);
+    Gtk::Grid* mainGrid = Gtk::make_managed<Gtk::Grid>();
+    mainGrid->set_halign(Gtk::Align::FILL);
+    mainGrid->set_valign(Gtk::Align::FILL);
+    mainGrid->set_vexpand(true);
+    mainGrid->set_column_homogeneous(true);
+    mainGrid->set_row_homogeneous(true);
 
     // GitLab:
-    Gtk::Box* leftBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
-    leftBox->set_vexpand(true);
-    mainBox->append(*leftBox);
-    leftBox->set_homogeneous(false);
-    leftBox->set_vexpand(true);
-    leftBox->append(plot);
+    mainGrid->attach(plot, 0, 0);
+
     Gtk::Box* leftBottomBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
-    leftBox->append(*leftBottomBox);
+    mainGrid->attach(*leftBottomBox, 0, 1);
     leftBottomBox->append(deviceStatus);
     leftBottomBox->set_vexpand(true);
     leftBottomBox->set_valign(Gtk::Align::END);
@@ -95,16 +93,13 @@ void MainWindow::prep_overview_stack_page(Gtk::Stack* stack) {
     screenBrightnessBtn.set_value(static_cast<double>(backend::systemUtils::get_screen_brightness()));
     screenBrightnessBtn.signal_value_changed().connect(sigc::ptr_fun(&MainWindow::on_screen_brightness_value_changed));
 
-    Gtk::Box* rightBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
-    rightBox->set_homogeneous(true);
-    mainBox->append(*rightBox);
     // DB:
-    rightBox->append(db);
+    mainGrid->attach(db, 1, 0);
 
     // Weather:
-    rightBox->append(weather);
+    mainGrid->attach(weather, 1, 1);
 
-    stack->add(*mainBox, "overview", "Overview");
+    stack->add(*mainGrid, "overview", "Overview");
 }
 
 void MainWindow::prep_lightning_stack_page(Gtk::Stack* stack) {
