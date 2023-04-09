@@ -1,4 +1,6 @@
 #include "PlotWidget.hpp"
+#include "backend/gitlab/GitLabHelper.hpp"
+#include "backend/storage/Settings.hpp"
 #include "logger/Logger.hpp"
 #include <algorithm>
 #include <cassert>
@@ -91,6 +93,9 @@ void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
 }
 
 void PlotWidget::update_data() {
+    const backend::storage::Settings* settings = backend::storage::get_settings_instance();
+    backend::gitlab::request_stats(settings->data.gitlabRunnerUrl);
+
     static std::random_device rd;
     static std::mt19937 gen(rd());
     static std::uniform_real_distribution<double> dis(-1, 1);

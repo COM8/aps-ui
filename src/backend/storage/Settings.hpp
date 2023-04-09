@@ -54,6 +54,12 @@ struct SettingsData {
     std::string clientId{"Your client ID. Obtained by registering a new application in Microsofts Azure Active Directory."};
     std::string clientSecret{"Your client secret. Obtained by registering a new application in Microsofts Azure Active Directory."};
 
+    /**
+     * GitLab runner metrics endpoint.
+     * https://docs.gitlab.com/runner/monitoring/
+     **/
+    std::string gitlabRunnerUrl{"The URL to your GitLab runner metrics endpoint. For example: http://10.0.0.42:9252/metrics"};
+
 } __attribute__((aligned(128)));
 
 class Settings {
