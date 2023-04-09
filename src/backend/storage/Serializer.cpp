@@ -26,7 +26,11 @@ void to_json(nlohmann::json& j, const SettingsData& d) {
         {"lightningMapCenterLong", d.lightningMapCenterLong},
         {"lightningMapApsLat", d.lightningMapApsLat},
         {"lightningMapApsLong", d.lightningMapApsLong},
-        {"lightningMapZoomLevel", d.lightningMapZoomLevel}};
+        {"lightningMapZoomLevel", d.lightningMapZoomLevel},
+
+        {"tenant", d.tenant},
+        {"clientId", d.clientId},
+        {"clientSecret", d.clientSecret}};
 }
 
 void from_json(const nlohmann::json& j, SettingsData& d) {
@@ -50,6 +54,10 @@ void from_json(const nlohmann::json& j, SettingsData& d) {
     j.at("lightningMapApsLat").get_to(d.lightningMapApsLat);
     j.at("lightningMapApsLong").get_to(d.lightningMapApsLong);
     j.at("lightningMapZoomLevel").get_to(d.lightningMapZoomLevel);
+
+    j.at("tenant").get_to(d.tenant);
+    j.at("clientId").get_to(d.clientId);
+    j.at("clientSecret").get_to(d.clientSecret);
 }
 }  // namespace backend::storage
 

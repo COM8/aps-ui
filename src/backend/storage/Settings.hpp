@@ -47,6 +47,13 @@ struct SettingsData {
     double lightningMapApsLong{8.9795143};
     double lightningMapZoomLevel{13};
 
+    /**
+     * Microsoft Teams related options.
+     **/
+    std::string tenant{"Your tenant ID. Obtained by registering a new application in Microsofts Azure Active Directory."};
+    std::string clientId{"Your client ID. Obtained by registering a new application in Microsofts Azure Active Directory."};
+    std::string clientSecret{"Your client secret. Obtained by registering a new application in Microsofts Azure Active Directory."};
+
 } __attribute__((aligned(128)));
 
 class Settings {
