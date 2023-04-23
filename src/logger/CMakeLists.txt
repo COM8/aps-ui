@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-add_library(logger SHARED Logger.cpp)
+add_library(logger Logger.cpp)
 target_link_libraries(logger PUBLIC spdlog::spdlog)
 
 set(LOG_LEVEL Default CACHE STRING "Sets the build type")
