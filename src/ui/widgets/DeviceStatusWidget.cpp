@@ -16,7 +16,7 @@ DeviceStatusWidget::DeviceStatusWidget() : Gtk::Box(Gtk::Orientation::VERTICAL) 
     start_thread();
 }
 
-DeviceStatusWidget::~DeviceStatusWidget() {
+DeviceStatusWidget::~DeviceStatusWidget() noexcept {
     if (shouldRun) {
         stop_thread();
     }
