@@ -131,7 +131,7 @@ FetchContent_Declare(websocket GIT_REPOSITORY https://github.com/machinezone/IXW
 
 set(BUILD_TZ_LIB ON CACHE INTERNAL " " FORCE)
 FetchContent_Declare(date GIT_REPOSITORY https://github.com/HowardHinnant/date.git
-                          GIT_TAG 50acf3ffd8b09deeec6980be824f2ac54a50b095)
+                          GIT_TAG cc4685a21e4a4fdae707ad1233c61bbaff241f93)
 FetchContent_MakeAvailable(date)
 set(USE_TLS ON)
 set(USE_ZLIB OFF)
