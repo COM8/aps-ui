@@ -127,7 +127,7 @@ FetchContent_Declare(re2 GIT_REPOSITORY https://github.com/google/re2.git
 FetchContent_MakeAvailable(re2)
 
 FetchContent_Declare(websocket GIT_REPOSITORY https://github.com/machinezone/IXWebSocket.git
-                               GIT_TAG v11.4.3)
+                               GIT_TAG dfa10df5ae89697d5dad56e1845aee64d2334d70)
 
 set(BUILD_TZ_LIB ON CACHE INTERNAL " " FORCE)
 FetchContent_Declare(date GIT_REPOSITORY https://github.com/HowardHinnant/date.git
