@@ -2,15 +2,32 @@
 #include "logger/Logger.hpp"
 #include <cstddef>
 #include <cstdlib>
+#include <nlohmann/json.hpp>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 #include <cpr/cpr.h>
 
 namespace backend::gitlab {
-void parse_response(const std::string& response) {
-    std::vector<std::string_view> parts;
-    std::vector<size_t> counts;
+std::string parse_state(std::string_view part) {
+    try {
+        nlohmann::json j = nlohmann::json::parse(part);
+
+        if (j.contains("state")) {
+            std::string state;
+            j.at("state").get_to(state);
+            return state;
+        }
+
+    } catch (nlohmann::json::parse_error& e) {
+        SPDLOG_ERROR("Error parsing GitLab runner state from '{}' with: {}", part, e.what());
+    }
+    return "";
+}
+
+std::unordered_map<std::string, size_t> parse_response(const std::string& response) {
+    std::unordered_map<std::string, size_t> result;
     std::string_view responseSV(response);
 
     while (!responseSV.empty()) {
@@ -22,15 +39,21 @@ void parse_response(const std::string& response) {
             if (indexStart != std::string::npos) {
                 std::string_view indexSV = part.substr(indexStart + 1, part.size() - indexStart - 1);
                 size_t count = std::strtoul(std::string{indexSV}.c_str(), nullptr, 10);
-                parts.push_back(part.substr(PREFIX.size() - 1, indexStart + 2 - PREFIX.size()));
-                counts.push_back(count);
+
+                // const std::string state = parse_state(part.substr(PREFIX.size() - 1, indexStart + 2 - PREFIX.size()));
+                const std::string state = std::string(part.substr(PREFIX.size() - 1, indexStart + 2 - PREFIX.size()));
+                if (!state.empty()) {
+                    result[state] += count;
+                }
             }
         }
         responseSV.remove_prefix(pos != std::string_view::npos ? pos + 1 : responseSV.size());
     }
+
+    return result;
 }
 
-void request_stats(const std::string& url) {
+std::unordered_map<std::string, size_t> request_stats(const std::string& url) {
     cpr::Session session;
     session.SetUrl(url);
 
@@ -42,9 +65,9 @@ void request_stats(const std::string& url) {
         } else {
             SPDLOG_ERROR("Requesting GitLab metrics failed. Status code: {}\nError: {}", response.status_code, response.error.message);
         }
-        return;
+        return {};
     }
     SPDLOG_DEBUG("GitLab metrics requested successfully. Parsing...");
-    parse_response(response.text);
+    return parse_response(response.text);
 }
 }  // namespace backend::gitlab

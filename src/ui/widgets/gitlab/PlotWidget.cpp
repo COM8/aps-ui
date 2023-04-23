@@ -3,6 +3,7 @@
 #include "backend/storage/Settings.hpp"
 #include "logger/Logger.hpp"
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <chrono>
 #include <cstddef>
@@ -60,8 +61,8 @@ void PlotWidget::draw_grid(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
     }
 }
 
-void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height, const pointArrType_t& points, double maxVal, const Gdk::RGBA& color) const {
-    if (curSize <= 0) {
+void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height, const pointArrType_t& points, size_t maxVal, const Gdk::RGBA& color) const {
+    if (curSize <= 0 || points.empty()) {
         return;
     }
 
@@ -71,14 +72,14 @@ void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
     // Line:
     ctx->set_line_width(2);
     ctx->set_line_join(Cairo::Context::LineJoin::ROUND);
-    ctx->move_to(0, height - (points[curIndex] / maxVal * maxHeight));
+    ctx->move_to(0, height - (static_cast<double>(points[curIndex]) / static_cast<double>(maxVal) * maxHeight));
 
     size_t index = 0;
     double x = 0;
     for (size_t i = 1; i < curSize; i++) {
         index = (curIndex + i) % MAX_POINT_COUNT;
         x = curSize >= MAX_POINT_COUNT && i + 1 >= curSize ? width : static_cast<double>(i) * increment;
-        const double y = points[index] / maxVal * maxHeight;
+        const double y = static_cast<double>(points[index]) / static_cast<double>(maxVal) * maxHeight;
         ctx->line_to(x, height - y);
     }
     ctx->set_source_rgba(color.get_red(), color.get_green(), color.get_blue(), color.get_alpha());
@@ -92,42 +93,55 @@ void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
     ctx->fill();
 }
 
-void PlotWidget::update_data() {
-    // const backend::storage::Settings* settings = backend::storage::get_settings_instance();
-    // backend::gitlab::request_stats(settings->data.gitlabRunnerUrl);
+Gdk::RGBA random_color() {
+    static const std::array<char, 16> HEX_CHARS{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'E', 'F'};
 
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    static std::uniform_real_distribution<double> dis(-1, 1);
+    static std::uniform_int_distribution<size_t> dis(0, 15);
+
+    std::string tmp = "#";
+    for (size_t i = 0; i < 6; i++) {
+        tmp += HEX_CHARS[dis(gen)];
+    }
+    return Gdk::RGBA{std::move(tmp)};
+}
+
+void PlotWidget::update_data() {
+    const backend::storage::Settings* settings = backend::storage::get_settings_instance();
+    std::unordered_map<std::string, size_t> data = backend::gitlab::request_stats(settings->data.gitlabRunnerUrl);
 
     pointsMutex.lock();
 
-    size_t prevIndex = 0;
+    // Update index:
     if (curSize <= 0) {
         curSize = 1;
         curIndex = 0;
     } else if (curSize >= MAX_POINT_COUNT) {
         curSize = MAX_POINT_COUNT;
-        prevIndex = (curIndex - 1 + curSize) % MAX_POINT_COUNT;
         curIndex = (curIndex + 1) % MAX_POINT_COUNT;
     } else {
-        prevIndex = curSize - 1;
         curSize++;
     }
 
-    for (std::tuple<pointArrType_t, Gdk::RGBA>& p : points) {
+    // Update all existing points with 0
+    size_t index = curSize <= 1 ? 0 : (curIndex + curSize - 1) % MAX_POINT_COUNT;
+    for (auto& entry : points) {
+        std::tuple<pointArrType_t, Gdk::RGBA>& p = entry.second;
         pointArrType_t& arr = std::get<0>(p);
+        arr[index] = 0;
+    }
 
-        if (curSize <= 1) {
-            arr[0] = 50 * (1 + dis(gen));
+    // Insert and update all new data points:
+    for (const auto& entry : data) {
+        if (points.contains(entry.first)) {
+            std::get<0>(points[entry.first])[index] = entry.second;
         } else {
-            size_t index = (curIndex + curSize - 1) % MAX_POINT_COUNT;
-            arr[index] = arr[prevIndex] + dis(gen);
-            if (arr[index] < 0) {
-                arr[index] = 0;
-            }
+            std::get<0>(points[entry.first])[index] = entry.second;
+            std::get<1>(points[entry.first]) = random_color();
         }
     }
+
     pointsMutex.unlock();
     disp.emit();
 }
@@ -136,7 +150,7 @@ void PlotWidget::thread_run() {
     SPDLOG_INFO("GitLab thread started.");
     while (shouldRun) {
         update_data();
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
     }
     SPDLOG_INFO("GitLab thread stoped.");
 }
@@ -163,16 +177,17 @@ void PlotWidget::on_draw_handler(const Cairo::RefPtr<Cairo::Context>& ctx, int w
 
     // Points:
     pointsMutex.lock();
-    double maxVal = 0;
-    for (const std::tuple<pointArrType_t, Gdk::RGBA>& p : points) {
-        const pointArrType_t& vec = std::get<0>(p);
-        const double tmp = *std::max_element(vec.begin(), vec.end());
+    size_t maxVal = 0;
+    for (const auto& p : points) {
+        const pointArrType_t& vec = std::get<0>(p.second);
+        const size_t tmp = *std::max_element(vec.begin(), vec.end());
         if (maxVal < tmp) {
             maxVal = tmp;
         }
     }
 
-    for (const std::tuple<pointArrType_t, Gdk::RGBA>& p : points) {
+    for (const auto& entry : points) {
+        const std::tuple<pointArrType_t, Gdk::RGBA>& p = entry.second;
         draw_data(ctx, width, height, std::get<0>(p), maxVal, std::get<1>(p));
     }
     pointsMutex.unlock();
