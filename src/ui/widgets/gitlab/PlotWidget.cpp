@@ -49,6 +49,10 @@ void PlotWidget::draw_grid(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
         ctx->move_to(0, height - static_cast<double>(i) * rowHeight);
         ctx->line_to(width, height - static_cast<double>(i) * rowHeight);
         ctx->stroke();
+
+        ctx->set_font_size(rowHeight * 0.75);
+        ctx->move_to(10, height - ((static_cast<double>(i - 1)) * rowHeight) - (rowHeight * 0.25));
+        ctx->text_path(std::to_string(i));
     }
 
     // Columns:
