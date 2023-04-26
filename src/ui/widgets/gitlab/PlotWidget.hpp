@@ -38,6 +38,7 @@ class PlotWidget : public Gtk::DrawingArea {
 
  private:
     void prep_widget();
+    static Gdk::RGBA random_color();
     void draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height, const pointArrType_t& points, size_t maxVal, const Gdk::RGBA& color) const;
     void draw_grid(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height) const;
 

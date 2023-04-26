@@ -93,7 +93,7 @@ void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
     ctx->fill();
 }
 
-Gdk::RGBA random_color() {
+Gdk::RGBA PlotWidget::random_color() {
     static const std::array<char, 16> HEX_CHARS{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'E', 'F'};
 
     static std::random_device rd;
