@@ -2,6 +2,7 @@
 #include "backend/gitlab/GitLabHelper.hpp"
 #include "backend/storage/Settings.hpp"
 #include "logger/Logger.hpp"
+#include "spdlog/spdlog.h"
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -43,11 +44,10 @@ void PlotWidget::draw_grid(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
     ctx->set_source_rgba(GRID_COLOR.get_red(), GRID_COLOR.get_green(), GRID_COLOR.get_blue(), GRID_COLOR.get_alpha());
 
     // Rows:
-    const size_t rowHeight = 50;
-    const size_t rowCount = static_cast<size_t>(height) / rowHeight;
-    for (size_t i = 1; i < rowCount + 1; i++) {
-        ctx->move_to(0, static_cast<double>(i * rowHeight));
-        ctx->line_to(width, static_cast<double>(i * rowHeight));
+    const double rowHeight = (static_cast<double>(height) * MAX_HEIGHT_CORRECTION) / static_cast<double>(runnerCount);
+    for (size_t i = 1; i <= runnerCount; i++) {
+        ctx->move_to(0, height - static_cast<double>(i) * rowHeight);
+        ctx->line_to(width, height - static_cast<double>(i) * rowHeight);
         ctx->stroke();
     }
 
@@ -61,25 +61,25 @@ void PlotWidget::draw_grid(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
     }
 }
 
-void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height, const pointArrType_t& points, size_t maxVal, const Gdk::RGBA& color) const {
+void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height, const pointArrType_t& points, size_t /*maxVal*/, const Gdk::RGBA& color) const {
     if (curSize <= 0 || points.empty()) {
         return;
     }
 
     double increment = static_cast<double>(width) / static_cast<double>(points.size());
-    double maxHeight = static_cast<double>(height) * 0.95;
+    double maxHeight = static_cast<double>(height) * MAX_HEIGHT_CORRECTION;
 
     // Line:
     ctx->set_line_width(2);
     ctx->set_line_join(Cairo::Context::LineJoin::ROUND);
-    ctx->move_to(0, height - (static_cast<double>(points[curIndex]) / static_cast<double>(maxVal) * maxHeight));
+    ctx->move_to(0, height);
 
     size_t index = 0;
     double x = 0;
-    for (size_t i = 1; i < curSize; i++) {
+    for (size_t i = 0; i < curSize; i++) {
         index = (curIndex + i) % MAX_POINT_COUNT;
         x = curSize >= MAX_POINT_COUNT && i + 1 >= curSize ? width : static_cast<double>(i) * increment;
-        const double y = static_cast<double>(points[index]) / static_cast<double>(maxVal) * maxHeight;
+        const double y = static_cast<double>(points[index]) / static_cast<double>(runnerCount) * maxHeight;
         ctx->line_to(x, height - y);
     }
     ctx->set_source_rgba(color.get_red(), color.get_green(), color.get_blue(), color.get_alpha());
@@ -109,9 +109,11 @@ Gdk::RGBA random_color() {
 
 void PlotWidget::update_data() {
     const backend::storage::Settings* settings = backend::storage::get_settings_instance();
-    std::unordered_map<std::string, size_t> data = backend::gitlab::request_stats(settings->data.gitlabRunnerUrl);
+    const backend::gitlab::GitLabStats stats = backend::gitlab::request_stats(settings->data.gitlabRunnerUrl);
 
     pointsMutex.lock();
+
+    runnerCount = stats.runnerCount;
 
     // Update index:
     if (curSize <= 0) {
@@ -133,7 +135,8 @@ void PlotWidget::update_data() {
     }
 
     // Insert and update all new data points:
-    for (const auto& entry : data) {
+    for (const auto& entry : stats.status) {
+        SPDLOG_DEBUG("{}: {}", entry.first, entry.second);
         if (points.contains(entry.first)) {
             std::get<0>(points[entry.first])[index] = entry.second;
         } else {
@@ -172,11 +175,11 @@ void PlotWidget::stop_thread() {
 
 //-----------------------------Events:-----------------------------
 void PlotWidget::on_draw_handler(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height) {
+    pointsMutex.lock();
     // Grid:
     draw_grid(ctx, width, height);
 
     // Points:
-    pointsMutex.lock();
     size_t maxVal = 0;
     for (const auto& p : points) {
         const pointArrType_t& vec = std::get<0>(p.second);
@@ -185,6 +188,7 @@ void PlotWidget::on_draw_handler(const Cairo::RefPtr<Cairo::Context>& ctx, int w
             maxVal = tmp;
         }
     }
+    assert(maxVal <= runnerCount);
 
     for (const auto& entry : points) {
         const std::tuple<pointArrType_t, Gdk::RGBA>& p = entry.second;

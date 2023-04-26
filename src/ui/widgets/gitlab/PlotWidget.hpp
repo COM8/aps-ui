@@ -22,6 +22,8 @@ class PlotWidget : public Gtk::DrawingArea {
     size_t curIndex{0};
     size_t curSize{0};
     using pointArrType_t = std::array<size_t, MAX_POINT_COUNT>;
+    size_t runnerCount{0};
+    const double MAX_HEIGHT_CORRECTION = 0.97;
 
     std::unordered_map<std::string, std::tuple<pointArrType_t, Gdk::RGBA>> points{};
     std::mutex pointsMutex{};
