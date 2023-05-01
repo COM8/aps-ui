@@ -6,6 +6,7 @@
 #include "ui/widgets/SettingsWidget.hpp"
 #include "ui/widgets/WeatherWidget.hpp"
 #include "ui/widgets/gitlab/PlotWidget.hpp"
+#include "ui/widgets/teams/TeamsWidget.hpp"
 #include <gtkmm.h>
 #include <gtkmm/box.h>
 #include <gtkmm/button.h>
@@ -30,6 +31,7 @@ class MainWindow : public Gtk::Window {
     Gtk::Box quickActionsBox{Gtk::Orientation::HORIZONTAL};
     widgets::LightningMap lightning{};
     widgets::gitlab::PlotWidget plot{};
+    widgets::teams::TeamsWidget teams{};
 
  public:
     MainWindow();

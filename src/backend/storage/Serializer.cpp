@@ -28,9 +28,8 @@ void to_json(nlohmann::json& j, const SettingsData& d) {
         {"lightningMapApsLong", d.lightningMapApsLong},
         {"lightningMapZoomLevel", d.lightningMapZoomLevel},
 
-        {"tenant", d.tenant},
-        {"clientId", d.clientId},
-        {"clientSecret", d.clientSecret},
+        {"teamsHookEndpoint", d.teamsHookEndpoint},
+        {"teamsHookAuthentication", d.teamsHookAuthentication},
 
         {"gitlabRunnerUrl", d.gitlabRunnerUrl}};
 }
@@ -57,9 +56,8 @@ void from_json(const nlohmann::json& j, SettingsData& d) {
     j.at("lightningMapApsLong").get_to(d.lightningMapApsLong);
     j.at("lightningMapZoomLevel").get_to(d.lightningMapZoomLevel);
 
-    j.at("tenant").get_to(d.tenant);
-    j.at("clientId").get_to(d.clientId);
-    j.at("clientSecret").get_to(d.clientSecret);
+    j.at("teamsHookEndpoint").get_to(d.teamsHookEndpoint);
+    j.at("teamsHookAuthentication").get_to(d.teamsHookAuthentication);
 
     j.at("gitlabRunnerUrl").get_to(d.gitlabRunnerUrl);
 }

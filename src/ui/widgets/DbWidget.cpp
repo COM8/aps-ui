@@ -3,8 +3,6 @@
 #include "backend/db/DbHelper.hpp"
 #include "backend/db/Departure.hpp"
 #include "backend/storage/Serializer.hpp"
-#include "backend/teams/Connection.hpp"
-#include "backend/teams/Token.hpp"
 #include "logger/Logger.hpp"
 #include <backend/storage/Settings.hpp>
 #include <cassert>
@@ -64,8 +62,6 @@ void DbWidget::update_departures_ui() {
     size_t newMaxWidgetCount = departures.size() >= MAX_COUNT ? MAX_COUNT : departures.size();
 
     backend::storage::Settings* settings = backend::storage::get_settings_instance();
-
-    backend::teams::Token::request_new_token(std::string{settings->data.tenant}, std::string{settings->data.clientId}, std::string{settings->data.clientSecret});
 
     // Load optional destination regex:
     std::optional<re2::RE2> destReg = std::nullopt;

@@ -50,9 +50,8 @@ struct SettingsData {
     /**
      * Microsoft Teams related options.
      **/
-    std::string tenant{"Your tenant ID. Obtained by registering a new application in Microsofts Azure Active Directory."};
-    std::string clientId{"Your client ID. Obtained by registering a new application in Microsofts Azure Active Directory."};
-    std::string clientSecret{"Your client secret. Obtained by registering a new application in Microsofts Azure Active Directory."};
+    std::string teamsHookEndpoint{"The endpoint for the teams hook: https://github.com/COM8/teams-hook"};
+    std::string teamsHookAuthentication{"Your authentication token from the teams hook: https://github.com/COM8/teams-hook"};
 
     /**
      * GitLab runner metrics endpoint.

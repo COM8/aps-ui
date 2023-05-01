@@ -60,12 +60,16 @@ void MainWindow::prep_overview_stack_page(Gtk::Stack* stack) {
     // GitLab:
     mainGrid->attach(plot, 0, 0);
 
+    // Left bottom:
     Gtk::Box* leftBottomBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
     mainGrid->attach(*leftBottomBox, 0, 1);
     leftBottomBox->append(deviceStatus);
     leftBottomBox->set_vexpand(true);
     leftBottomBox->set_valign(Gtk::Align::END);
     deviceStatus.set_valign(Gtk::Align::END);
+
+    // Teams:
+    leftBottomBox->append(teams);
 
     // Quick actions:
     leftBottomBox->append(quickActionsBox);
