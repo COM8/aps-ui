@@ -11,17 +11,21 @@ std::optional<CallEvent> CallEvent::from_json(const nlohmann::json& j) {
     if (j.contains("from")) {
         const nlohmann::json& jFrom = j["from"];
         std::string from;
-        if (!jFrom.contains("displayName") || jFrom["displayName"].is_null()) {
+        if (!jFrom.contains("displayName")) {
             return std::nullopt;
         }
-        jFrom["displayName"].get_to(from);
+        if (!jFrom["displayName"].is_null()) {
+            jFrom["displayName"].get_to(from);
+        }
 
         std::string id;
-        if (!jFrom.contains("id") || jFrom["id"].is_null()) {
+        if (!jFrom.contains("id")) {
             return std::nullopt;
         }
-        jFrom["id"].get_to(id);
-        return std::make_optional<CallEvent>(std::move(from), std::move(id));
+        if (!jFrom["id"].is_null()) {
+            jFrom["id"].get_to(id);
+        }
+        return std::make_optional<CallEvent>(std::move(id), std::move(from));
     }
     return std::nullopt;
 }
