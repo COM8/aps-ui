@@ -24,13 +24,6 @@ class PlotWidget : public Gtk::DrawingArea {
     using pointArrType_t = std::array<size_t, MAX_POINT_COUNT>;
 
     std::unordered_map<std::string, std::tuple<pointArrType_t, Gdk::RGBA>> points{};
-
-    // std::array<std::tuple<pointArrType_t, Gdk::RGBA>, 5> points{
-    //     std::make_tuple<pointArrType_t, Gdk::RGBA>({}, Gdk::RGBA{"#a51d2d"}),
-    //     std::make_tuple<pointArrType_t, Gdk::RGBA>({}, Gdk::RGBA{"#24634c"}),
-    //     std::make_tuple<pointArrType_t, Gdk::RGBA>({}, Gdk::RGBA{"#1d3f91"}),
-    //     std::make_tuple<pointArrType_t, Gdk::RGBA>({}, Gdk::RGBA{"#acb323"}),
-    //     std::make_tuple<pointArrType_t, Gdk::RGBA>({}, Gdk::RGBA{"#a923b3"})};
     std::mutex pointsMutex{};
 
  public:
