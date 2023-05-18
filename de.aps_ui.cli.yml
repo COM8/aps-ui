@@ -25,10 +25,6 @@ modules:
     sources:
       - type: dir
         path: .
-      - type: patch
-        path: flatpak/patches/offline_build.patch
-      - type: patch
-        path: flatpak/patches/libshumate_lib_name.patch
     post-install:
       - install -D de.aps_ui.cli.appdata.xml /app/share/metainfo/de.aps_ui.cli.appdata.xml
     modules:
