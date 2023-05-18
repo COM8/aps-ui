@@ -13,6 +13,7 @@ class CallWidget : public Gtk::Box {
     backend::teams::CallEndEvent callEnd;
 
     Gtk::Label label{};
+    Gtk::Label descLabel{};
 
  public:
     CallWidget();
@@ -27,6 +28,7 @@ class CallWidget : public Gtk::Box {
 
  private:
     void prep_widget();
+    static std::string get_local_time();
     //-----------------------------Events:-----------------------------
 };
 }  // namespace ui::widgets::teams

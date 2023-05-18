@@ -5,4 +5,4 @@ add_library(ui_widgets_teams TeamsWidget.cpp
                              CallWidget.cpp
                              CallWidget.hpp)
 target_link_libraries(ui_widgets_teams PUBLIC PkgConfig::GTKMM backend_teams
-                                        PRIVATE logger backend_storage ui_utils)
+                                        PRIVATE logger backend_storage ui_utils date::date)
