@@ -82,6 +82,7 @@ void MainWindow::prep_overview_stack_page(Gtk::Stack* stack) {
     leftBottomBox->append(quickActionsBox);
     quickActionsBox.set_halign(Gtk::Align::CENTER);
     quickActionsBox.set_valign(Gtk::Align::END);
+    quickActionsBox.set_vexpand(true);
     quickActionsBox.set_margin_bottom(10);
     quickActionsBox.append(fullscreenBtn);
     fullscreenBtn.set_icon_name("window-grow-symbolic");
