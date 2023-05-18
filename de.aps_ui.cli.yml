@@ -11,7 +11,7 @@ finish-args:
   - --share=network
   - --own-name=de.aps_ui.cli
   - --device=dri
-  - --filesystem=aps
+  - --filesystem=home
   - --filesystem=host
   - --filesystem=/sys/class/backlight/rpi_backlight
 modules:
