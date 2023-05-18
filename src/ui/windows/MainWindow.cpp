@@ -65,8 +65,10 @@ void MainWindow::prep_overview_stack_page(Gtk::Stack* stack) {
     mainGrid->attach(*leftBottomBox, 0, 1);
     leftBottomBox->append(deviceStatus);
     leftBottomBox->set_vexpand(true);
-    leftBottomBox->set_valign(Gtk::Align::END);
+    leftBottomBox->set_valign(Gtk::Align::FILL);
     deviceStatus.set_valign(Gtk::Align::END);
+    leftBottomBox->set_hexpand(true);
+    leftBottomBox->set_halign(Gtk::Align::CENTER);
 
     // Teams:
     leftBottomBox->append(teams);

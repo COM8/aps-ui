@@ -4,9 +4,10 @@
 #include "ui/widgets/teams/CallWidget.hpp"
 #include <memory>
 #include <string>
+#include <gtkmm/enums.h>
 
 namespace ui::widgets::teams {
-TeamsWidget::TeamsWidget() {
+TeamsWidget::TeamsWidget() : Gtk::Box(Gtk::Orientation::HORIZONTAL) {
     prep_widget();
 
     disp.connect(sigc::mem_fun(*this, &TeamsWidget::on_notification_from_update_thread));
@@ -25,8 +26,12 @@ TeamsWidget::~TeamsWidget() {
 void TeamsWidget::prep_widget() {
     set_margin(6);
     set_margin_end(3);
+
     append(callWidget);
     callWidget.set_visible(false);
+    callWidget.set_halign(Gtk::Align::CENTER);
+    callWidget.set_vexpand(true);
+    callWidget.set_valign(Gtk::Align::CENTER);
 }
 
 void TeamsWidget::update_ui() {

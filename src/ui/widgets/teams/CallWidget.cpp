@@ -1,5 +1,6 @@
 #include "CallWidget.hpp"
 #include "backend/teams/Connection.hpp"
+#include "ui/utils/UiUtils.hpp"
 
 namespace ui::widgets::teams {
 CallWidget::CallWidget() {
@@ -9,9 +10,8 @@ CallWidget::CallWidget() {
 void CallWidget::prep_widget() {
     append(label);
 
-    label.get_style_context()->add_provider(styleProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-    styleProvider->load_from_data(".call-style { color: #FFFFFF; background-image: image(#337700); }");
-    label.add_css_class("call-style");
+    label.get_style_context()->add_provider(get_css_provider(), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+    label.add_css_class("call");
 }
 
 void CallWidget::set_call(backend::teams::CallEvent&& call) {
@@ -20,7 +20,7 @@ void CallWidget::set_call(backend::teams::CallEvent&& call) {
 }
 
 void CallWidget::update_ui() {
-    label.set_label(call.from.empty() ? call.id : call.from);
+    label.set_label("📞   " + (call.from.empty() ? call.id : call.from));
 }
 
 //-----------------------------Events:-----------------------------

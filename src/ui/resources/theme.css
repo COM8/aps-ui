@@ -1,3 +1,65 @@
 .transparent-background {
     background-image: image(#00000000);
 }
+
+.call {
+    /* Rounded edges to make it look like a pill */
+    border-radius: 25px;
+
+    /* Shadow for focus effect */
+    box-shadow: 0 0 10px #000;
+
+    /* Initial background color */
+    background: #006400;
+    /* DarkGreen */
+
+    /* Text color */
+    color: white;
+
+    /* Padding for content inside the pill */
+    padding: 10px 20px;
+
+    /* Transition for smooth focus effect */
+    transition: box-shadow 0.3s ease-in-out;
+
+    /* Green gradient animation */
+    animation: green-gradient 5s linear infinite;
+}
+
+@keyframes green-gradient {
+    0% {
+        background: #006400;
+    }
+
+    /* DarkGreen */
+    25% {
+        background: #228B22;
+    }
+
+    /* ForestGreen */
+    50% {
+        background: #32CD32;
+    }
+
+    /* LimeGreen */
+    75% {
+        background: #ADFF2F;
+    }
+
+    /* GreenYellow */
+    100% {
+        background: #006400;
+    }
+
+    /* DarkGreen */
+}
+
+.call:active {
+    /* Enhance shadow on active (click) */
+    box-shadow: 0 0 15px #000;
+}
+
+.call:hover {
+    /* Enhance shadow on hover */
+    box-shadow: 0 0 20px #000;
+}
