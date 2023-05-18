@@ -1,5 +1,7 @@
 #include "CallWidget.hpp"
 #include "backend/teams/Connection.hpp"
+#include "logger/Logger.hpp"
+#include "spdlog/spdlog.h"
 #include "ui/utils/UiUtils.hpp"
 #include <chrono>
 #include <memory>
@@ -9,13 +11,15 @@
 #include <sigc++/connection.h>
 
 namespace ui::widgets::teams {
-CallWidget::CallWidget() : Gtk::Box(Gtk::Orientation::VERTICAL) {
+CallWidget::CallWidget() : mainBox(Gtk::Orientation::VERTICAL) {
     prep_widget();
 }
 
 void CallWidget::prep_widget() {
-    append(label);
-    append(descLabel);
+    set_child(mainBox);
+
+    mainBox.append(label);
+    mainBox.append(descLabel);
 
     get_style_context()->add_provider(get_css_provider(), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     descLabel.add_css_class("dim-label");
@@ -71,6 +75,12 @@ void CallWidget::set_call_end(backend::teams::CallEndEvent&& callEnd) {
 //-----------------------------Events:-----------------------------
 bool CallWidget::on_call_ended_timeout() {
     set_visible(false);
+    SPDLOG_INFO("Call ended timeout reached.");
     return false;
+}
+
+void CallWidget::on_clicked() {
+    SPDLOG_INFO("Call button clicked. Hiding.");
+    set_visible(false);
 }
 }  // namespace ui::widgets::teams

@@ -4,14 +4,17 @@
 #include <memory>
 #include <glibmm/dispatcher.h>
 #include <gtkmm/box.h>
+#include <gtkmm/button.h>
 #include <gtkmm/label.h>
 #include <sigc++/connection.h>
 
 namespace ui::widgets::teams {
-class CallWidget : public Gtk::Box {
+class CallWidget : public Gtk::Button {
  private:
     backend::teams::CallEvent call;
     backend::teams::CallEndEvent callEnd;
+
+    Gtk::Box mainBox;
 
     Gtk::Label label{};
     Gtk::Label descLabel{};
@@ -35,5 +38,6 @@ class CallWidget : public Gtk::Box {
 
     //-----------------------------Events:-----------------------------
     bool on_call_ended_timeout();
+    void on_clicked() override;
 };
 }  // namespace ui::widgets::teams
