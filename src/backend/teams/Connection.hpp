@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <string>
 #include <eventpp/callbacklist.h>
 #include <ixwebsocket/IXWebSocket.h>
