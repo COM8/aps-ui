@@ -2,9 +2,11 @@
 #include "backend/teams/Connection.hpp"
 #include "ui/utils/UiUtils.hpp"
 #include <chrono>
+#include <memory>
 #include <date/date.h>
 #include <gtkmm/box.h>
 #include <gtkmm/enums.h>
+#include <sigc++/connection.h>
 
 namespace ui::widgets::teams {
 CallWidget::CallWidget() : Gtk::Box(Gtk::Orientation::VERTICAL) {
@@ -30,6 +32,12 @@ void CallWidget::set_call(backend::teams::CallEvent&& call) {
     remove_css_class("call-end");
     add_css_class("call");
 
+    // Cancel the hide timeout:
+    if (hideTimeout) {
+        hideTimeout->disconnect();
+        hideTimeout = nullptr;
+    }
+
     set_visible(true);
 }
 
@@ -49,7 +57,20 @@ void CallWidget::set_call_end(backend::teams::CallEndEvent&& callEnd) {
 
     remove_css_class("call");
     add_css_class("call-end");
+
+    // Restart the hide timeout:
+    if (hideTimeout) {
+        hideTimeout->disconnect();
+        hideTimeout = nullptr;
+    }
+
+    sigc::connection hideTimeout = Glib::signal_timeout().connect_seconds(sigc::mem_fun(*this, &CallWidget::on_call_ended_timeout), 60);
+    this->hideTimeout = std::make_unique<sigc::connection>(std::move(hideTimeout));
 }
 
 //-----------------------------Events:-----------------------------
+bool CallWidget::on_call_ended_timeout() {
+    set_visible(false);
+    return false;
+}
 }  // namespace ui::widgets::teams

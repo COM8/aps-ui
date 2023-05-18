@@ -5,6 +5,7 @@
 #include <glibmm/dispatcher.h>
 #include <gtkmm/box.h>
 #include <gtkmm/label.h>
+#include <sigc++/connection.h>
 
 namespace ui::widgets::teams {
 class CallWidget : public Gtk::Box {
@@ -14,6 +15,8 @@ class CallWidget : public Gtk::Box {
 
     Gtk::Label label{};
     Gtk::Label descLabel{};
+
+    std::unique_ptr<sigc::connection> hideTimeout{nullptr};
 
  public:
     CallWidget();
@@ -29,6 +32,8 @@ class CallWidget : public Gtk::Box {
  private:
     void prep_widget();
     static std::string get_local_time();
+
     //-----------------------------Events:-----------------------------
+    bool on_call_ended_timeout();
 };
 }  // namespace ui::widgets::teams
