@@ -30,6 +30,45 @@ std::optional<CallEvent> CallEvent::from_json(const nlohmann::json& j) {
     return std::nullopt;
 }
 
+std::optional<CallEndEvent> CallEndEvent::from_json(const nlohmann::json& j) {
+    std::string reason;
+    if (!j.contains("reason")) {
+        return std::nullopt;
+    }
+    if (!j["reason"].is_null()) {
+        j["reason"].get_to(reason);
+    }
+
+    std::string phrase;
+    if (!j.contains("phrase")) {
+        return std::nullopt;
+    }
+    if (!j["phrase"].is_null()) {
+        j["phrase"].get_to(phrase);
+    }
+
+    if (j.contains("sender")) {
+        const nlohmann::json& jSender = j["sender"];
+        std::string from;
+        if (!jSender.contains("displayName")) {
+            return std::nullopt;
+        }
+        if (!jSender["displayName"].is_null()) {
+            jSender["displayName"].get_to(from);
+        }
+
+        std::string id;
+        if (!jSender.contains("id")) {
+            return std::nullopt;
+        }
+        if (!jSender["id"].is_null()) {
+            jSender["id"].get_to(id);
+        }
+        return std::make_optional<CallEndEvent>(std::move(id), std::move(from), std::move(reason), std::move(phrase));
+    }
+    return std::nullopt;
+}
+
 Connection::Connection(std::string&& endPoint, std::string&& authentication) : endPoint(std::move(endPoint)), authentication(std::move(authentication)) {}
 
 void Connection::start() {
@@ -69,6 +108,7 @@ void Connection::parse(const std::string& s) {
 
     } catch (nlohmann::json::parse_error& e) {
         SPDLOG_ERROR("Error parsing teams websocket message JSON from '{}' with: {}", s, e.what());
+        return;
     }
 
     // Check if the message is an authentication message:
@@ -89,6 +129,21 @@ void Connection::parse(const std::string& s) {
         // Invoke the event handler:
         if (onCallEvent) {
             onCallEvent(*callEvent);
+        }
+        return;
+    }
+
+    if (j.contains("callEnd")) {
+        std::optional<CallEndEvent> callEndEvent = CallEndEvent::from_json(j["callEnd"]);
+        if (!callEndEvent) {
+            SPDLOG_ERROR("Malformed call end event received!");
+            return;
+        }
+        SPDLOG_INFO("Received teams call ended event from '{}' with id '{}' with reason '{}' ({}).", callEndEvent->from, callEndEvent->id, callEndEvent->phrase, callEndEvent->reason);
+
+        // Invoke the event handler:
+        if (onCallEndEvent) {
+            onCallEndEvent(*callEndEvent);
         }
         return;
     }

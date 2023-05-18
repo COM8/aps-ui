@@ -54,12 +54,22 @@
     /* DarkGreen */
 }
 
-.call:active {
-    /* Enhance shadow on active (click) */
-    box-shadow: 0 0 15px #000;
-}
+.call-end {
+    /* Rounded edges to make it look like a pill */
+    border-radius: 25px;
 
-.call:hover {
-    /* Enhance shadow on hover */
-    box-shadow: 0 0 20px #000;
+    /* Shadow for focus effect */
+    box-shadow: 0 0 10px #000;
+
+    /* Green gradient for incoming call effect */
+    background-image: linear-gradient(to right, #640000, #cd3232);
+
+    /* Text color */
+    color: white;
+
+    /* Padding for content inside the pill */
+    padding: 10px 20px;
+
+    /* Transition for smooth focus effect */
+    transition: box-shadow 0.3s ease-in-out;
 }

@@ -14,6 +14,15 @@ struct CallEvent {
     static std::optional<CallEvent> from_json(const nlohmann::json& j);
 } __attribute__((aligned(64)));
 
+struct CallEndEvent {
+    std::string id;
+    std::string from;
+    std::string reason;
+    std::string phrase;
+
+    static std::optional<CallEndEvent> from_json(const nlohmann::json& j);
+} __attribute__((aligned(128)));
+
 class Connection {
  private:
     ix::WebSocket webSocket;
@@ -26,6 +35,7 @@ class Connection {
 
     // Event handler:
     eventpp::CallbackList<void(const CallEvent&)> onCallEvent;
+    eventpp::CallbackList<void(const CallEndEvent&)> onCallEndEvent;
 
     void start();
     void stop();

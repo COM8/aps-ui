@@ -10,11 +10,13 @@ class TeamsWidget : public Gtk::Box {
  private:
     std::unique_ptr<backend::teams::Connection> connection{nullptr};
 
-    Glib::Dispatcher disp;
+    Glib::Dispatcher callDisp;
+    Glib::Dispatcher callEndDisp;
     std::mutex callMutex{};
 
     CallWidget callWidget{};
     backend::teams::CallEvent call{};
+    backend::teams::CallEndEvent callEnd{};
 
  public:
     TeamsWidget();
@@ -26,10 +28,11 @@ class TeamsWidget : public Gtk::Box {
 
  private:
     void prep_widget();
-    void update_ui();
 
     //-----------------------------Events:-----------------------------
     void on_call_event(const backend::teams::CallEvent& event);
-    void on_notification_from_update_thread();
+    void on_call_end_event(const backend::teams::CallEndEvent& event);
+    void on_call_notification_from_ws();
+    void on_call_end_notification_from_ws();
 };
 }  // namespace ui::widgets::teams

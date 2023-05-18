@@ -10,6 +10,7 @@ namespace ui::widgets::teams {
 class CallWidget : public Gtk::Box {
  private:
     backend::teams::CallEvent call;
+    backend::teams::CallEndEvent callEnd;
 
     Gtk::Label label{};
 
@@ -22,11 +23,10 @@ class CallWidget : public Gtk::Box {
     ~CallWidget() override = default;
 
     void set_call(backend::teams::CallEvent&& call);
+    void set_call_end(backend::teams::CallEndEvent&& callEnd);
 
  private:
     void prep_widget();
-    void update_ui();
-
     //-----------------------------Events:-----------------------------
 };
 }  // namespace ui::widgets::teams
