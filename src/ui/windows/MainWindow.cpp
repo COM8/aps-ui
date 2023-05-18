@@ -19,6 +19,11 @@ void MainWindow::prep_window() {
     set_title("Aps UI");
     set_default_size(800, 480);
 
+// Make the window look like a debug window for debug builds:
+#ifdef DEBUG
+    add_css_class("devel");
+#endif  // DEBUG
+
     // Keyboard events:
     Glib::RefPtr<Gtk::EventControllerKey> controller = Gtk::EventControllerKey::create();
     controller->signal_key_pressed().connect(sigc::mem_fun(*this, &MainWindow::on_key_pressed), false);

@@ -145,5 +145,13 @@ restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BK
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
 
+string(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_LOWER)
+if(CMAKE_BUILD_TYPE_LOWER MATCHES ".*release.*")
+    message(STATUS "Some sort of release build detected.")
+else()
+    message(STATUS "Some sort of debug build detected.")
+    add_compile_definitions(DEBUG)
+endif()
+
 include_directories(${CMAKE_SOURCE_DIR}/src)
 add_subdirectory(src)
