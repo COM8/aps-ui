@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <random>
 #include <vector>
+#include <cairo.h>
 #include <cairomm/context.h>
 #include <gtkmm/enums.h>
 
@@ -40,6 +41,8 @@ void PlotWidget::prep_widget() {
 }
 
 void PlotWidget::draw_grid(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height) const {
+    ctx->save();
+
     ctx->set_line_width(2);
     ctx->set_source_rgba(GRID_COLOR.get_red(), GRID_COLOR.get_green(), GRID_COLOR.get_blue(), GRID_COLOR.get_alpha());
 
@@ -63,17 +66,25 @@ void PlotWidget::draw_grid(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
         ctx->line_to(static_cast<double>(i * colWidth), height);
         ctx->stroke();
     }
+
+    ctx->restore();
 }
 
-void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height, const pointArrType_t& points, size_t /*maxVal*/, const Gdk::RGBA& color) const {
+void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height, const pointArrType_t& points, pointArrType_t& curOffset, const Gdk::RGBA& color) const {
     if (curSize <= 0 || points.empty()) {
         return;
     }
 
-    double increment = static_cast<double>(width) / static_cast<double>(points.size());
+    ctx->save();
+    ctx->set_operator(Cairo::Context::Operator::SOURCE);
+
     double maxHeight = static_cast<double>(height) * MAX_HEIGHT_CORRECTION;
+    double yStep = maxHeight / static_cast<double>(runnerCount);
+    double xStep = static_cast<double>(width) / static_cast<double>(points.size());
 
     // Line:
+    ctx->begin_new_path();
+    ctx->set_source_rgba(color.get_red(), color.get_green(), color.get_blue(), color.get_alpha());
     ctx->set_line_width(2);
     ctx->set_line_join(Cairo::Context::LineJoin::ROUND);
     ctx->move_to(0, height);
@@ -82,19 +93,32 @@ void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
     double x = 0;
     for (size_t i = 0; i < curSize; i++) {
         index = (curIndex + i) % MAX_POINT_COUNT;
-        x = curSize >= MAX_POINT_COUNT && i + 1 >= curSize ? width : static_cast<double>(i) * increment;
-        const double y = static_cast<double>(points[index]) / static_cast<double>(runnerCount) * maxHeight;
-        ctx->line_to(x, height - y);
+
+        x = curSize >= MAX_POINT_COUNT && i + 1 >= curSize ? width : static_cast<double>(i) * xStep;
+        const double y = static_cast<double>(curOffset[index]) * yStep;
+
+        if (i == 0) {
+            ctx->move_to(x, height - y);
+        } else {
+            ctx->line_to(x, height - y);
+        }
+
+        curOffset[index] -= points[index];
     }
-    ctx->set_source_rgba(color.get_red(), color.get_green(), color.get_blue(), color.get_alpha());
+
+    if (curSize < MAX_POINT_COUNT) {
+        ctx->line_to(x, height);
+    }
     ctx->stroke_preserve();
+    ctx->line_to(x, height);
 
     // Polygon:
-    ctx->line_to(x, height);
     ctx->line_to(0, height);
     ctx->close_path();
     ctx->set_source_rgba(color.get_red(), color.get_green(), color.get_blue(), color.get_alpha() * 0.3);
     ctx->fill();
+
+    ctx->restore();
 }
 
 Gdk::RGBA PlotWidget::random_color() {
@@ -102,12 +126,22 @@ Gdk::RGBA PlotWidget::random_color() {
 
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    static std::uniform_int_distribution<size_t> dis(0, 15);
+    static std::uniform_int_distribution<size_t> normalBrightness(0, 15);
+    static std::uniform_int_distribution<size_t> highBrightness(8, 15);
+    static std::uniform_int_distribution<size_t> isBrightComponent(0, 2);
 
     std::string tmp = "#";
-    for (size_t i = 0; i < 6; i++) {
-        tmp += HEX_CHARS[dis(gen)];
+    size_t brightPart = isBrightComponent(gen);
+    for (size_t i = 0; i < 3; i++) {
+        if (i == brightPart) {
+            tmp += HEX_CHARS[highBrightness(gen)];
+            tmp += HEX_CHARS[highBrightness(gen)];
+        } else {
+            tmp += HEX_CHARS[normalBrightness(gen)];
+            tmp += HEX_CHARS[normalBrightness(gen)];
+        }
     }
+    tmp += "FF";  // Disable alpha
     return Gdk::RGBA{std::move(tmp)};
 }
 
@@ -140,7 +174,6 @@ void PlotWidget::update_data() {
 
     // Insert and update all new data points:
     for (const auto& entry : stats.status) {
-        SPDLOG_DEBUG("{}: {}", entry.first, entry.second);
         if (points.contains(entry.first)) {
             std::get<0>(points[entry.first])[index] = entry.second;
         } else {
@@ -182,22 +215,17 @@ void PlotWidget::on_draw_handler(const Cairo::RefPtr<Cairo::Context>& ctx, int w
     pointsMutex.lock();
     // Grid:
     draw_grid(ctx, width, height);
+    ctx->push_group();
 
     // Points:
-    size_t maxVal = 0;
-    for (const auto& p : points) {
-        const pointArrType_t& vec = std::get<0>(p.second);
-        const size_t tmp = *std::max_element(vec.begin(), vec.end());
-        if (maxVal < tmp) {
-            maxVal = tmp;
-        }
-    }
-    assert(maxVal <= runnerCount);
-
+    pointArrType_t curOffset{};
+    curOffset.fill(runnerCount);
     for (const auto& entry : points) {
         const std::tuple<pointArrType_t, Gdk::RGBA>& p = entry.second;
-        draw_data(ctx, width, height, std::get<0>(p), maxVal, std::get<1>(p));
+        draw_data(ctx, width, height, std::get<0>(p), curOffset, std::get<1>(p));
     }
+    ctx->pop_group_to_source();
+    ctx->paint();
     pointsMutex.unlock();
 }
 
