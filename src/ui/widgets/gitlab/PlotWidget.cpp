@@ -8,13 +8,17 @@
 #include <cassert>
 #include <chrono>
 #include <cstddef>
-#include <random>
 #include <vector>
 #include <cairo.h>
 #include <cairomm/context.h>
 #include <gtkmm/enums.h>
 
 namespace ui::widgets::gitlab {
+// NOLINTNEXTLINE(cert-err58-cpp)
+const std::array<Gdk::RGBA, 10> PlotWidget::COLORS{Gdk::RGBA("#ffbe0b"), Gdk::RGBA("#606c38"), Gdk::RGBA("#780000"), Gdk::RGBA("#003566"), Gdk::RGBA("#9f86c0"), Gdk::RGBA("#fb5607"), Gdk::RGBA("#ff006e"), Gdk::RGBA("#8338ec"), Gdk::RGBA("#3a86ff"), Gdk::RGBA("#669bbc")};
+// NOLINTNEXTLINE(cert-err58-cpp)
+const Gdk::RGBA PlotWidget::GRID_COLOR{"#575757"};
+
 PlotWidget::PlotWidget() {
     prep_widget();
     disp.connect(sigc::mem_fun(*this, &PlotWidget::on_notification_from_update_thread));
@@ -121,33 +125,21 @@ void PlotWidget::draw_data(const Cairo::RefPtr<Cairo::Context>& ctx, int width, 
     ctx->restore();
 }
 
-Gdk::RGBA PlotWidget::random_color() {
-    static const std::array<char, 16> HEX_CHARS{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'E', 'F'};
-
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    static std::uniform_int_distribution<size_t> normalBrightness(0, 15);
-    static std::uniform_int_distribution<size_t> highBrightness(8, 15);
-    static std::uniform_int_distribution<size_t> isBrightComponent(0, 2);
-
-    std::string tmp = "#";
-    size_t brightPart = isBrightComponent(gen);
-    for (size_t i = 0; i < 3; i++) {
-        if (i == brightPart) {
-            tmp += HEX_CHARS[highBrightness(gen)];
-            tmp += HEX_CHARS[highBrightness(gen)];
-        } else {
-            tmp += HEX_CHARS[normalBrightness(gen)];
-            tmp += HEX_CHARS[normalBrightness(gen)];
-        }
+Gdk::RGBA PlotWidget::get_color() {
+    const size_t index = colorIndex++;
+    if (colorIndex >= COLORS.size()) {
+        colorIndex = 0;
     }
-    tmp += "FF";  // Disable alpha
-    return Gdk::RGBA{std::move(tmp)};
+    return COLORS[index];
 }
 
 void PlotWidget::update_data() {
-    const backend::storage::Settings* settings = backend::storage::get_settings_instance();
-    const backend::gitlab::GitLabStats stats = backend::gitlab::request_stats(settings->data.gitlabRunnerUrl);
+    // const backend::storage::Settings* settings = backend::storage::get_settings_instance();
+    // const backend::gitlab::GitLabStats stats = backend::gitlab::request_stats(settings->data.gitlabRunnerUrl);
+
+    const backend::gitlab::GitLabStats stats{
+        {{"idle", 2}, {"docker", 1}, {"aaaaa", 1}, {"bbbb", 1}, {"publishing", 3}},
+        8};
 
     pointsMutex.lock();
 
@@ -178,7 +170,7 @@ void PlotWidget::update_data() {
             std::get<0>(points[entry.first])[index] = entry.second;
         } else {
             std::get<0>(points[entry.first])[index] = entry.second;
-            std::get<1>(points[entry.first]) = random_color();
+            std::get<1>(points[entry.first]) = get_color();
         }
     }
 
