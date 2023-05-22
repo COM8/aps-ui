@@ -5,13 +5,17 @@
 #include <thread>
 #include <tuple>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 #include <gdkmm/rgba.h>
 #include <glibmm/dispatcher.h>
+#include <gtkmm/box.h>
 #include <gtkmm/drawingarea.h>
+#include <gtkmm/flowbox.h>
+#include <gtkmm/label.h>
 
 namespace ui::widgets::gitlab {
-class PlotWidget : public Gtk::DrawingArea {
+class PlotWidget : public Gtk::Box {
  private:
     bool shouldRun{false};
     std::unique_ptr<std::thread> updateThread{nullptr};
@@ -29,8 +33,13 @@ class PlotWidget : public Gtk::DrawingArea {
     size_t runnerCount{0};
     static constexpr double MAX_HEIGHT_CORRECTION = 0.97;
 
+    std::vector<std::string> newPoints{};
     std::unordered_map<std::string, std::tuple<pointArrType_t, Gdk::RGBA>> points{};
     std::mutex pointsMutex{};
+
+    Gtk::DrawingArea drawingArea{};
+    Gtk::FlowBox flowBox{};
+    std::vector<Gtk::Label> labels{};
 
  public:
     PlotWidget();

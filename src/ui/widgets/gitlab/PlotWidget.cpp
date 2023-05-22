@@ -8,10 +8,15 @@
 #include <cassert>
 #include <chrono>
 #include <cstddef>
+#include <string>
 #include <vector>
 #include <cairo.h>
 #include <cairomm/context.h>
+#include <gdkmm/rgba.h>
+#include <gtkmm/box.h>
+#include <gtkmm/cssprovider.h>
 #include <gtkmm/enums.h>
+#include <gtkmm/label.h>
 
 namespace ui::widgets::gitlab {
 // NOLINTNEXTLINE(cert-err58-cpp)
@@ -19,7 +24,7 @@ const std::array<Gdk::RGBA, 10> PlotWidget::COLORS{Gdk::RGBA("#ffbe0b"), Gdk::RG
 // NOLINTNEXTLINE(cert-err58-cpp)
 const Gdk::RGBA PlotWidget::GRID_COLOR{"#575757"};
 
-PlotWidget::PlotWidget() {
+PlotWidget::PlotWidget() : Gtk::Box(Gtk::Orientation::VERTICAL) {
     prep_widget();
     disp.connect(sigc::mem_fun(*this, &PlotWidget::on_notification_from_update_thread));
     start_thread();
@@ -32,16 +37,22 @@ PlotWidget::~PlotWidget() {
 }
 
 void PlotWidget::prep_widget() {
-    set_draw_func(sigc::mem_fun(*this, &PlotWidget::on_draw_handler));
-    set_can_target(false);
-    set_can_focus(false);
-
     set_hexpand();
     set_vexpand();
-    set_overflow(Gtk::Overflow::HIDDEN);
     set_margin(6);
     set_margin_end(3);
-    add_css_class("card");
+
+    drawingArea.set_draw_func(sigc::mem_fun(*this, &PlotWidget::on_draw_handler));
+    drawingArea.set_can_target(false);
+    drawingArea.set_can_focus(false);
+
+    drawingArea.set_hexpand();
+    drawingArea.set_vexpand();
+    drawingArea.set_overflow(Gtk::Overflow::HIDDEN);
+    drawingArea.add_css_class("card");
+    append(drawingArea);
+
+    append(flowBox);
 }
 
 void PlotWidget::draw_grid(const Cairo::RefPtr<Cairo::Context>& ctx, int width, int height) const {
@@ -134,12 +145,8 @@ Gdk::RGBA PlotWidget::get_color() {
 }
 
 void PlotWidget::update_data() {
-    // const backend::storage::Settings* settings = backend::storage::get_settings_instance();
-    // const backend::gitlab::GitLabStats stats = backend::gitlab::request_stats(settings->data.gitlabRunnerUrl);
-
-    const backend::gitlab::GitLabStats stats{
-        {{"idle", 2}, {"docker", 1}, {"aaaaa", 1}, {"bbbb", 1}, {"publishing", 3}},
-        8};
+    const backend::storage::Settings* settings = backend::storage::get_settings_instance();
+    const backend::gitlab::GitLabStats stats = backend::gitlab::request_stats(settings->data.gitlabRunnerUrl);
 
     pointsMutex.lock();
 
@@ -171,6 +178,9 @@ void PlotWidget::update_data() {
         } else {
             std::get<0>(points[entry.first])[index] = entry.second;
             std::get<1>(points[entry.first]) = get_color();
+
+            // Inform the UI thread that there is a new point source:
+            newPoints.emplace_back(entry.first);
         }
     }
 
@@ -182,7 +192,7 @@ void PlotWidget::thread_run() {
     SPDLOG_INFO("GitLab thread started.");
     while (shouldRun) {
         update_data();
-        std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     SPDLOG_INFO("GitLab thread stoped.");
 }
@@ -222,6 +232,39 @@ void PlotWidget::on_draw_handler(const Cairo::RefPtr<Cairo::Context>& ctx, int w
 }
 
 void PlotWidget::on_notification_from_update_thread() {
-    queue_draw();
+    drawingArea.queue_draw();
+
+    pointsMutex.lock();
+    // Insert new labels:
+    for (const std::string& name : newPoints) {
+        // Create new label:
+        labels.emplace_back(name + ": " + std::to_string(std::get<0>(points[name])[curIndex]));
+        labels.back().set_margin(1);
+
+        // Apply pill shape:
+        const Gdk::RGBA color = std::get<1>(points[name]);
+        Glib::RefPtr<Gtk::CssProvider> pillCssProvider = Gtk::CssProvider::create();
+        pillCssProvider->load_from_data(".pill { border-radius: 9999px; padding: 2px 4px; border: 2px solid " + color.to_string() + "; background-color: alpha(" + color.to_string() + ", 0.3); }");
+        labels.back().get_style_context()->add_provider(pillCssProvider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+        labels.back().add_css_class("pill");
+
+        // Insert in flow box:
+        flowBox.insert(labels.back(), -1);
+    }
+    newPoints.clear();
+
+    // Update labels.
+    // This is inefficient and should be replace at some point in the future with a more efficient one.
+    for (const auto& point : points) {
+        for (Gtk::Label& label : labels) {
+            if (label.get_label().find(point.first) != std::string::npos) {
+                const size_t count = std::get<0>(point.second)[curIndex];
+                label.set_label(point.first + ": " + std::to_string(count));
+                break;
+            }
+        }
+    }
+
+    pointsMutex.unlock();
 }
 }  // namespace ui::widgets::gitlab
