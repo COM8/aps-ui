@@ -125,7 +125,7 @@ void LightningHelper::parse(const std::string& s) {
             std::vector<Lightning> lightnings;
             for (const nlohmann::json& jLighting : array) {
                 std::optional<Lightning> lighting = Lightning::from_json(jLighting);
-                if (lighting && lighting->lat >= latMin && lighting->lat <= latMax && lighting->lon >= longMin && lighting->lon <= longMax) {
+                if (lighting) {
                     lightnings.emplace_back(*lighting);
                 }
             }
