@@ -235,10 +235,12 @@ void PlotWidget::on_notification_from_update_thread() {
     drawingArea.queue_draw();
 
     pointsMutex.lock();
+    size_t index = curIndex <= 0 ? MAX_POINT_COUNT : curIndex - 1;
+
     // Insert new labels:
     for (const std::string& name : newPoints) {
         // Create new label:
-        labels.emplace_back(name + ": " + std::to_string(std::get<0>(points[name])[curIndex]));
+        labels.emplace_back(name + ": " + std::to_string(std::get<0>(points[name])[index]));
         labels.back().set_margin(1);
 
         // Apply pill shape:
@@ -258,7 +260,7 @@ void PlotWidget::on_notification_from_update_thread() {
     for (const auto& point : points) {
         for (Gtk::Label& label : labels) {
             if (label.get_label().find(point.first) != std::string::npos) {
-                const size_t count = std::get<0>(point.second)[curIndex];
+                const size_t count = std::get<0>(point.second)[index];
                 label.set_label(point.first + ": " + std::to_string(count));
                 break;
             }
