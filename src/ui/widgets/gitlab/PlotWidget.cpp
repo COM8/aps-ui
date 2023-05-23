@@ -235,7 +235,7 @@ void PlotWidget::on_notification_from_update_thread() {
     drawingArea.queue_draw();
 
     pointsMutex.lock();
-    size_t index = curIndex <= 0 ? MAX_POINT_COUNT : curIndex - 1;
+    size_t index = curIndex <= 0 ? MAX_POINT_COUNT - 1 : curIndex - 1;
 
     // Insert new labels:
     for (const std::string& name : newPoints) {
