@@ -32,6 +32,6 @@ struct Departure {
 
     std::vector<std::string> infoMessages;
 
-    static std::shared_ptr<Departure> from_json(const nlohmann::json& j);
+    static std::shared_ptr<Departure> from_json(const nlohmann::json& j, const std::string& timeFormat);
 } __attribute__((aligned(128)));
 }  // namespace backend::db

@@ -141,7 +141,7 @@ void DbWidget::update_departures() {
     std::vector<std::shared_ptr<backend::db::Departure>> departures;
     try {
         backend::storage::Settings* settings = backend::storage::get_settings_instance();
-        departures = backend::db::request_departures(settings->data.dbStationId, settings->data.dbLookAheadCount, settings->data.dbLookBehindCount);
+        departures = backend::db::request_departures(settings->data.dbStationId, settings->data.dbLookAheadCount, settings->data.dbLookBehindCount, settings->data.dbTimeFormat);
     } catch (const std::exception& e) {
         SPDLOG_ERROR("Failed to update departures with: {}", e.what());
     }

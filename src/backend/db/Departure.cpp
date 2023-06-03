@@ -96,7 +96,7 @@ std::tuple<std::vector<Stop>, std::vector<Stop>> parse_stops(const nlohmann::jso
     return std::make_tuple(std::move(prevStops), std::move(nextStops));
 }
 
-std::shared_ptr<Departure> Departure::from_json(const nlohmann::json& j) {
+std::shared_ptr<Departure> Departure::from_json(const nlohmann::json& j, const std::string& timeFormat) {
     if (!j.contains("departure")) {
         SPDLOG_ERROR("Failed to parse departure. 'departure' filed missing.");
         return nullptr;
@@ -112,7 +112,7 @@ std::shared_ptr<Departure> Departure::from_json(const nlohmann::json& j) {
     departureObj.at("scheduledTime").get_to(depTimeScheduledStr);
     std::istringstream depTimeScheduledStrSs{depTimeScheduledStr};
     std::chrono::system_clock::time_point depTimeScheduled;
-    depTimeScheduledStrSs >> date::parse("%Y-%m-%dT%T.000Z", depTimeScheduled);
+    depTimeScheduledStrSs >> date::parse(timeFormat, depTimeScheduled);
 
     if (!departureObj.contains("time")) {
         SPDLOG_ERROR("Failed to parse departure. 'time' filed missing.");
@@ -122,7 +122,7 @@ std::shared_ptr<Departure> Departure::from_json(const nlohmann::json& j) {
     departureObj.at("time").get_to(depTimeStr);
     std::istringstream depTimeStrSs{depTimeStr};
     std::chrono::system_clock::time_point depTime;
-    depTimeStrSs >> date::parse("%Y-%m-%dT%T.000Z", depTime);
+    depTimeStrSs >> date::parse(timeFormat, depTime);
 
     if (!departureObj.contains("platform")) {
         SPDLOG_ERROR("Failed to parse departure. 'platform' filed missing.");

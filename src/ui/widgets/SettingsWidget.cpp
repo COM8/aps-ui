@@ -84,6 +84,14 @@ void SettingsWidget::prep_widget() {
     dbLookBehindCount.set_placeholder_text("150");
     contentBox->append(dbLookBehindCount);
 
+    Gtk::Label* dbTimeFormatLabel = Gtk::make_managed<Gtk::Label>();
+    dbTimeFormatLabel->set_text("Time format:");
+    dbTimeFormatLabel->set_margin_top(10);
+    dbTimeFormatLabel->set_halign(Gtk::Align::START);
+    contentBox->append(*dbTimeFormatLabel);
+    dbTimeFormat.set_placeholder_text("%Y-%m-%dT%T.000Z");
+    contentBox->append(dbTimeFormat);
+
     // Weather:
     Gtk::Label* weatherSectionLabel = Gtk::make_managed<Gtk::Label>();
     weatherSectionLabel->set_markup("<span font_weight='bold'>Weather</span>");
@@ -127,6 +135,7 @@ void SettingsWidget::load_settings() {
     dbFilterDepartedTrainsCBtn.set_active(settings->dbFilterDepartedTrains);
     dbLookAheadCount.set_text(std::to_string(settings->dbLookAheadCount));
     dbLookBehindCount.set_text(std::to_string(settings->dbLookBehindCount));
+    dbTimeFormat.set_text(settings->dbTimeFormat);
 
     weatherLat.set_text(settings->weatherLat);
     weatherLong.set_text(settings->weatherLong);
@@ -145,6 +154,7 @@ void SettingsWidget::save_settings() {
     settings->dbFilterDepartedTrains = dbFilterDepartedTrainsCBtn.get_active();
     settings->dbLookAheadCount = static_cast<int>(std::strtol(dbLookAheadCount.get_text().c_str(), nullptr, 10));
     settings->dbLookBehindCount = static_cast<int>(std::strtol(dbLookBehindCount.get_text().c_str(), nullptr, 10));
+    settings->dbTimeFormat = dbTimeFormat.get_text();
 
     settings->weatherLat = weatherLat.get_text();
     settings->weatherLong = weatherLong.get_text();

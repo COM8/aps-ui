@@ -15,6 +15,7 @@ class SettingsWidget : public Gtk::Box {
     Gtk::CheckButton dbFilterDepartedTrainsCBtn{"Filter departed trains"};
     Gtk::Entry dbLookAheadCount;
     Gtk::Entry dbLookBehindCount;
+    Gtk::Entry dbTimeFormat;
 
     Gtk::Entry weatherLat;
     Gtk::Entry weatherLong;

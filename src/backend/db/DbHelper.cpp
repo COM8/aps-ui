@@ -14,7 +14,7 @@ cpr::Url build_url(const std::string& stationId, size_t lookAhead, size_t lookBe
     return cpr::Url("https://bahn.expert/api/iris/v2/abfahrten/" + stationId + "?lookahead=" + std::to_string(lookAhead) + "&lookbehind=" + std::to_string(lookBehind));
 }
 
-std::vector<std::shared_ptr<Departure>> parse_response(const std::string& response) {
+std::vector<std::shared_ptr<Departure>> parse_response(const std::string& response, const std::string& timeFormat) {
     try {
         nlohmann::json j = nlohmann::json::parse(response);
 
@@ -30,7 +30,7 @@ std::vector<std::shared_ptr<Departure>> parse_response(const std::string& respon
 
         std::vector<std::shared_ptr<Departure>> result{};
         for (const nlohmann::json& jDep : array) {
-            std::shared_ptr<Departure> dep = Departure::from_json(jDep);
+            std::shared_ptr<Departure> dep = Departure::from_json(jDep, timeFormat);
             if (dep) {
                 result.push_back(std::move(dep));
             } else {
@@ -46,7 +46,7 @@ std::vector<std::shared_ptr<Departure>> parse_response(const std::string& respon
     return {};
 }
 
-std::vector<std::shared_ptr<Departure>> request_departures(const std::string& stationId, size_t lookAhead, size_t lookBehind) {
+std::vector<std::shared_ptr<Departure>> request_departures(const std::string& stationId, size_t lookAhead, size_t lookBehind, const std::string& timeFormat) {
     cpr::Session session;
     session.SetUrl(build_url(stationId, lookAhead, lookBehind));
 
@@ -61,6 +61,6 @@ std::vector<std::shared_ptr<Departure>> request_departures(const std::string& st
         return {};
     }
     SPDLOG_DEBUG("Departures requested successfully. Parsing...");
-    return parse_response(response.text);
+    return parse_response(response.text, timeFormat);
 }
 }  // namespace backend::db

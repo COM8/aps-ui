@@ -25,6 +25,7 @@ struct SettingsData {
     std::string dbStopsAtRegex{"Hulb"};
     bool dbStopsAtRegexEnabled = true;
     bool dbFilterDepartedTrains = true;
+    std::string dbTimeFormat{"%Y-%m-%dT%T.000Z"};
 
     /**
      * The open weather map location for the weather forecast. 
