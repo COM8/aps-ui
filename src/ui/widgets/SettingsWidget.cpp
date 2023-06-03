@@ -38,6 +38,7 @@ void SettingsWidget::prep_widget() {
     append(*scroll);
     Gtk::Box* contentBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
     scroll->set_child(*contentBox);
+    contentBox->set_margin_bottom(10);
 
     // DB:
     Gtk::Label* dbSectionLabel = Gtk::make_managed<Gtk::Label>();
