@@ -140,6 +140,7 @@ else()
                              GIT_TAG 2023-03-01)
     FetchContent_MakeAvailable(re2)
 
+    set(USE_TLS ON CACHE INTERNAL " " FORCE)
     FetchContent_Declare(websocket GIT_REPOSITORY https://github.com/machinezone/IXWebSocket.git
                                    GIT_TAG dfa10df5ae89697d5dad56e1845aee64d2334d70)
 
