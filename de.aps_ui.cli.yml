@@ -35,7 +35,7 @@ modules:
         sources:
           - type: git
             url: https://github.com/libcpr/cpr.git
-            commit: 1cb247a6dae0fddbb27ffb3ea63506b0fd83e636
+            commit: 1750af467726733b0ccd0fc84a3fe32ab5b0612d
         cleanup:
           - /include
       - name: nlohmann-json
