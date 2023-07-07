@@ -36,7 +36,8 @@ Checks: '*,
 -readability-identifier-length,
 -altera-unroll-loops,
 -pro-bounds-constant-array-index,
--cppcoreguidelines-pro-bounds-constant-array-index
+-cppcoreguidelines-pro-bounds-constant-array-index,
+-cppcoreguidelines-avoid-do-while
 '
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/*.hpp'

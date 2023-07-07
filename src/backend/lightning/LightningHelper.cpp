@@ -10,14 +10,11 @@
 #include <string>
 #include <thread>
 #include <vector>
-#include <ixwebsocket/IXNetSystem.h>
-#include <ixwebsocket/IXUserAgent.h>
-#include <ixwebsocket/IXWebSocket.h>
 
 namespace backend::lightning {
 void LightningHelper::start() {
-    webSocket.setUrl("wss://live.lightningmaps.org");
-    webSocket.setOnMessageCallback([this](const ix::WebSocketMessagePtr& msg) { this->on_message(msg); });
+    webSocket.onRcv.append([this](const std::string& msg) { this->on_message(msg); });
+    webSocket.onConnected.append([this]() { this->set_coordinates(); });
     webSocket.start();
     SPDLOG_INFO("Lightning websocket started.");
 }
@@ -70,7 +67,10 @@ void LightningHelper::set_coordinates(double latCenter, double longCenter, doubl
 }
 
 void LightningHelper::set_coordinates() {
-    assert(webSocket.getReadyState() == ix::ReadyState::Open);
+    if (!webSocket.is_connected()) {
+        SPDLOG_WARN("Lightning helper failed to set coordinates because the websocket is not connected.");
+        return;
+    }
     nlohmann::json j;
     j["v"] = 24;
     nlohmann::json i;
@@ -97,22 +97,15 @@ void LightningHelper::set_coordinates() {
     j["r"] = "w";
 
     SPDLOG_DEBUG("[WEBSOCKET]: Wrote: {}", j.dump());
-    webSocket.sendText(j.dump());
+    webSocket.send(j.dump());
 }
 
-void LightningHelper::on_message(const ix::WebSocketMessagePtr& msg) {
-    if (msg->type == ix::WebSocketMessageType::Message) {
-        SPDLOG_DEBUG("[WEBSOCKET]: {}", msg->str);
-        parse(msg->str);
-        if (coordinatesChanged) {
-            coordinatesChanged = false;
-            set_coordinates();
-        }
-    } else if (msg->type == ix::WebSocketMessageType::Open) {
-        SPDLOG_INFO("[WEBSOCKET]: Connection established.");
+void LightningHelper::on_message(const std::string& msg) {
+    SPDLOG_DEBUG("[WEBSOCKET]: {}", msg);
+    parse(msg);
+    if (coordinatesChanged) {
+        coordinatesChanged = false;
         set_coordinates();
-    } else if (msg->type == ix::WebSocketMessageType::Error) {
-        SPDLOG_ERROR("[WEBSOCKET]: Error: {}", msg->errorInfo.reason);
     }
 }
 

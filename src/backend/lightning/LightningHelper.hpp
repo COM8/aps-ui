@@ -1,18 +1,19 @@
 #pragma once
 
 #include "Lightning.hpp"
+#include <backend/ws/Websocket.hpp>
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <string>
 #include <thread>
 #include <vector>
 #include <eventpp/callbacklist.h>
-#include <ixwebsocket/IXWebSocket.h>
 
 namespace backend::lightning {
 class LightningHelper {
  private:
-    ix::WebSocket webSocket;
+    ws::Websocket webSocket{"wss://live.lightningmaps.org"};
 
     bool coordinatesChanged{false};
     double latCenter{0};
@@ -33,7 +34,7 @@ class LightningHelper {
     void set_coordinates();
 
  private:
-    void on_message(const ix::WebSocketMessagePtr& msg);
+    void on_message(const std::string& msg);
     void parse(const std::string& s);
 };
 

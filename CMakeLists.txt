@@ -122,7 +122,8 @@ else()
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
     FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/libcpr/cpr.git
-                             GIT_TAG 1750af467726733b0ccd0fc84a3fe32ab5b0612d)
+                             GIT_TAG 1750af467726733b0ccd0fc84a3fe32ab5b0612d
+                             PATCH_COMMAND "git" "reset" "--hard" "&&" "git" "apply" "${CMAKE_SOURCE_DIR}/cmake/cpr_patch.patch")
     set(CPR_BUILD_TESTS OFF CACHE INTERNAL " " FORCE)
     set(CURL_CA_FALLBACK ON CACHE INTERNAL " " FORCE) # Workaround for failing SSL requests
     FetchContent_MakeAvailable(cpr)

@@ -5,5 +5,5 @@ add_library(backend_lightning LightningHelper.cpp
                               Lightning.cpp
                               Lightning.hpp)
 
-target_link_libraries(backend_lightning PRIVATE logger ixwebsocket
+target_link_libraries(backend_lightning PRIVATE logger backend_websocket
                                         PUBLIC nlohmann_json::nlohmann_json eventpp::eventpp)

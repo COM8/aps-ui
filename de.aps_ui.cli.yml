@@ -36,6 +36,9 @@ modules:
           - type: git
             url: https://github.com/libcpr/cpr.git
             commit: 1750af467726733b0ccd0fc84a3fe32ab5b0612d
+          - type: patch
+            path: cmake/cpr_patch.patch
+            use-git: true
         cleanup:
           - /include
       - name: nlohmann-json
