@@ -32,13 +32,13 @@ void TeamsWidget::prep_widget() {
     set_margin_end(3);
 
     append(callWidget);
-    callWidget.set_visible(true);
+    callWidget.set_visible(false);
     callWidget.set_halign(Gtk::Align::CENTER);
     callWidget.set_vexpand(true);
     callWidget.set_valign(Gtk::Align::CENTER);
 
     append(activityWidget);
-    activityWidget.set_visible(true);
+    activityWidget.set_visible(false);
     activityWidget.set_halign(Gtk::Align::CENTER);
     activityWidget.set_vexpand(true);
     activityWidget.set_valign(Gtk::Align::END);
