@@ -24,6 +24,12 @@ struct CallEndEvent {
     static std::optional<CallEndEvent> from_json(const nlohmann::json& j);
 } __attribute__((aligned(128)));
 
+struct ActivityEvent {
+    int count;
+
+    static std::optional<ActivityEvent> from_json(const nlohmann::json& j);
+} __attribute__((aligned(4)));
+
 class Connection {
  private:
     ws::Websocket webSocket;
@@ -36,6 +42,7 @@ class Connection {
     // Event handler:
     eventpp::CallbackList<void(const CallEvent&)> onCallEvent;
     eventpp::CallbackList<void(const CallEndEvent&)> onCallEndEvent;
+    eventpp::CallbackList<void(const ActivityEvent&)> onActivityEvent;
 
     void start();
     void stop();

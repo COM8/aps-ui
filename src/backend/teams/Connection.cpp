@@ -69,6 +69,15 @@ std::optional<CallEndEvent> CallEndEvent::from_json(const nlohmann::json& j) {
     return std::nullopt;
 }
 
+std::optional<ActivityEvent> ActivityEvent::from_json(const nlohmann::json& j) {
+    int count = 0;
+    if (!j.contains("count")) {
+        return std::nullopt;
+    }
+    j["count"].get_to(count);
+    return std::make_optional<ActivityEvent>(count);
+}
+
 Connection::Connection(std::string&& endPoint, std::string&& authentication) : webSocket(std::move(endPoint)), authentication(std::move(authentication)) {}
 
 void Connection::start() {
@@ -104,10 +113,18 @@ void Connection::parse(const std::string& s) {
         return;
     }
 
-    // Check if the message is an authentication message:
-    if (j.contains("auth")) {
-        j["auth"].get_to(authenticated);
-        SPDLOG_INFO("Teams websocket authentication changed to: {}", authenticated);
+    if (j.contains("activity")) {
+        std::optional<ActivityEvent> activityEvent = ActivityEvent::from_json(j["activity"]);
+        if (!activityEvent) {
+            SPDLOG_ERROR("Malformed activity event received!");
+            return;
+        }
+        SPDLOG_INFO("Received teams activity event.");
+
+        // Invoke the event handler:
+        if (onActivityEvent) {
+            onActivityEvent(*activityEvent);
+        }
         return;
     }
 
@@ -138,6 +155,13 @@ void Connection::parse(const std::string& s) {
         if (onCallEndEvent) {
             onCallEndEvent(*callEndEvent);
         }
+        return;
+    }
+
+    // Check if the message is an authentication message:
+    if (j.contains("auth")) {
+        j["auth"].get_to(authenticated);
+        SPDLOG_INFO("Teams websocket authentication changed to: {}", authenticated);
         return;
     }
 
