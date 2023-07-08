@@ -73,3 +73,23 @@
     /* Transition for smooth focus effect */
     transition: box-shadow 0.3s ease-in-out;
 }
+
+.activity {
+    /* Rounded edges to make it look like a pill */
+    border-radius: 25px;
+
+    /* Shadow for focus effect */
+    box-shadow: 0 0 10px #000;
+
+    /* Green gradient for incoming call effect */
+    background-image: linear-gradient(to right, #006400, #228B22);
+
+    /* Text color */
+    color: white;
+
+    /* Padding for content inside the pill */
+    padding: 10px 20px;
+
+    /* Transition for smooth focus effect */
+    transition: box-shadow 0.3s ease-in-out;
+}
