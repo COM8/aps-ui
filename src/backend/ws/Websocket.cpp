@@ -50,7 +50,7 @@ void Websocket::thread_run() {
         // Send/Receive:
         while (shouldRun && connected) {
             if (!recv_any()) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                std::this_thread::sleep_for(std::chrono::milliseconds(250));
             }
         }
     }
@@ -105,6 +105,11 @@ bool Websocket::recv_any() {
                 return false;
             }
             return true;
+        }
+
+        // There is more coming:
+        if (meta->flags & CURLWS_CONT) {
+            continue;
         }
 
         // No more data available since we did not receive CHUNK_SIZE chars:
