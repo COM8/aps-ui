@@ -1,10 +1,10 @@
 #pragma once
 
+#include "backend/ws/Websocket.hpp"
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
 #include <eventpp/callbacklist.h>
-#include <ixwebsocket/IXWebSocket.h>
 
 namespace backend::teams {
 
@@ -26,9 +26,8 @@ struct CallEndEvent {
 
 class Connection {
  private:
-    ix::WebSocket webSocket;
+    ws::Websocket webSocket;
     bool authenticated{false};
-    std::string endPoint;
     std::string authentication;
 
  public:
@@ -43,7 +42,7 @@ class Connection {
 
  private:
     void authenticate();
-    void on_message(const ix::WebSocketMessagePtr& msg);
+    void on_message(const std::string& msg);
     void parse(const std::string& s);
 };
 }  // namespace backend::teams

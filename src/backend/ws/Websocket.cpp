@@ -58,16 +58,25 @@ void Websocket::thread_run() {
 }
 
 bool Websocket::recv_any() {
-    constexpr size_t CHUNK_SIZE{1024};
-    std::string buffer{};
+    constexpr size_t CHUNK_SIZE{512};
+    std::string result{};
+    std::array<char, CHUNK_SIZE> buffer{};
 
     size_t recvLen{0};
     curl_ws_frame* meta{nullptr};
 
     while (true) {
-        buffer.resize(buffer.size() + CHUNK_SIZE);
+        CURLcode ret = curl_ws_recv(curl, buffer.data(), buffer.size(), &recvLen, &meta);
 
-        CURLcode ret = curl_ws_recv(curl, &buffer[buffer.size() - CHUNK_SIZE], CHUNK_SIZE, &recvLen, &meta);
+        // Nothing to read
+        if (ret == CURLE_AGAIN) {
+            if (result.empty()) {
+                return false;
+            }
+
+            // Wait for more to arrive
+            continue;
+        }
 
         // Should run?
         if (!shouldRun) {
@@ -78,6 +87,7 @@ bool Websocket::recv_any() {
         // Success?
         if (ret != CURLE_OK) {
             SPDLOG_ERROR("curl_ws_recv() for '{}' failed with: {}", url, curl_easy_strerror(ret));
+            curl_disconnect();
             return false;
         }
 
@@ -93,19 +103,22 @@ bool Websocket::recv_any() {
             SPDLOG_DEBUG("Receive websocket ping for '{}'.", url);
             const std::string pong{"pong"};
             size_t sentCount{0};
-            ret = curl_ws_send(curl, pong.c_str(), pong.size(), &sentCount, 0, CURLWS_PONG);
+            ret = curl_ws_send(curl, pong.c_str(), pong.length(), &sentCount, 0, CURLWS_PONG);
 
             if (ret != CURLE_OK) {
                 SPDLOG_ERROR("curl_ws_send(PONG) for '{}' failed with: {}", url, curl_easy_strerror(ret));
                 return false;
             }
 
-            if (sentCount != pong.size()) {
-                SPDLOG_ERROR("curl_ws_send(PONG) for '{}' failed with: did only send {} out of {} chars.", url, sentCount, pong.size());
+            if (sentCount != pong.length()) {
+                SPDLOG_ERROR("curl_ws_send(PONG) for '{}' failed with: did only send {} out of {} chars.", url, sentCount, pong.length());
                 return false;
             }
             return true;
         }
+
+        // Append the read buffer to the result:
+        result.append(buffer.begin(), buffer.begin() + recvLen);
 
         // There is more coming:
         if (meta->flags & CURLWS_CONT) {
@@ -114,14 +127,14 @@ bool Websocket::recv_any() {
 
         // No more data available since we did not receive CHUNK_SIZE chars:
         if (recvLen < CHUNK_SIZE) {
-            SPDLOG_DEBUG("Websocket received {} chars.", recvLen);
+            SPDLOG_DEBUG("Websocket received {} chars.", result.length());
             break;
         }
     }
 
     // Invoke the event handler:
     if (onRcv) {
-        onRcv(buffer);
+        onRcv(result);
     }
 
     return true;

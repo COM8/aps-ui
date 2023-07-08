@@ -83,7 +83,6 @@ if(APS_UI_FLATPAK_BUILD)
     find_package(nlohmann_json CONFIG REQUIRED)
     find_package(spdlog CONFIG REQUIRED)
     find_package(re2 CONFIG REQUIRED)
-    find_package(ixwebsocket CONFIG REQUIRED)
     find_package(eventpp CONFIG REQUIRED)
     find_package(date CONFIG REQUIRED)
 else()
@@ -141,18 +140,10 @@ else()
                              GIT_TAG 2023-03-01)
     FetchContent_MakeAvailable(re2)
 
-    set(USE_TLS ON CACHE INTERNAL " " FORCE)
-    FetchContent_Declare(websocket GIT_REPOSITORY https://github.com/machinezone/IXWebSocket.git
-                                   GIT_TAG dfa10df5ae89697d5dad56e1845aee64d2334d70)
-
     set(BUILD_TZ_LIB ON CACHE INTERNAL " " FORCE)
     FetchContent_Declare(date GIT_REPOSITORY https://github.com/HowardHinnant/date.git
                               GIT_TAG cc4685a21e4a4fdae707ad1233c61bbaff241f93)
     FetchContent_MakeAvailable(date)
-    set(USE_TLS ON)
-    set(USE_ZLIB OFF)
-    FetchContent_MakeAvailable(websocket)
-    include_directories("${websocket_SOURCE_DIR}")
 
     FetchContent_Declare(eventpp
                          GIT_REPOSITORY https://github.com/wqking/eventpp.git

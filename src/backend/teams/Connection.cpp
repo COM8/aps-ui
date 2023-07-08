@@ -1,5 +1,5 @@
 #include "Connection.hpp"
-#include "ixwebsocket/IXSocketTLSOptions.h"
+#include "backend/ws/Websocket.hpp"
 #include "logger/Logger.hpp"
 #include "nlohmann/json.hpp"
 #include "spdlog/spdlog.h"
@@ -69,11 +69,11 @@ std::optional<CallEndEvent> CallEndEvent::from_json(const nlohmann::json& j) {
     return std::nullopt;
 }
 
-Connection::Connection(std::string&& endPoint, std::string&& authentication) : endPoint(std::move(endPoint)), authentication(std::move(authentication)) {}
+Connection::Connection(std::string&& endPoint, std::string&& authentication) : webSocket(std::move(endPoint)), authentication(std::move(authentication)) {}
 
 void Connection::start() {
-    webSocket.setUrl(endPoint);
-    webSocket.setOnMessageCallback([this](const ix::WebSocketMessagePtr& msg) { this->on_message(msg); });
+    webSocket.onRcv.append([this](const std::string& msg) { this->on_message(msg); });
+    webSocket.onConnected.append([this]() { authenticate(); });
     webSocket.start();
     SPDLOG_INFO("Teams websocket started.");
 }
@@ -88,16 +88,9 @@ void Connection::authenticate() {
     SPDLOG_INFO("Teams websocket authentication sent.");
 }
 
-void Connection::on_message(const ix::WebSocketMessagePtr& msg) {
-    if (msg->type == ix::WebSocketMessageType::Message) {
-        SPDLOG_DEBUG("[TEAMS_WEBSOCKET]: {}", msg->str);
-        parse(msg->str);
-    } else if (msg->type == ix::WebSocketMessageType::Open) {
-        SPDLOG_INFO("[TEAMS_WEBSOCKET]: Connection established.");
-        authenticate();
-    } else if (msg->type == ix::WebSocketMessageType::Error) {
-        SPDLOG_ERROR("[TEAMS_WEBSOCKET]: Error: {}", msg->errorInfo.reason);
-    }
+void Connection::on_message(const std::string& msg) {
+    SPDLOG_DEBUG("[TEAMS_WEBSOCKET]: {}", msg);
+    parse(msg);
 }
 
 void Connection::parse(const std::string& s) {
