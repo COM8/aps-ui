@@ -81,7 +81,7 @@ modules:
         sources:
           - type: git
             url: https://github.com/google/re2.git
-            tag: 2023-11-01
+            tag: "2023-11-01"
             commit: bc0faab533e2b27b85b8ad312abf061e33ed6b5d
         modules:
           - name: abseil
