@@ -96,7 +96,7 @@ else()
     endif()
 
     ExternalProject_Add(shumate_build GIT_REPOSITORY https://gitlab.gnome.org/GNOME/libshumate.git
-                                      GIT_TAG main
+                                      GIT_TAG 1.1.1
                                       CONFIGURE_COMMAND ${MESON_PATH} "<BINARY_DIR>" "<SOURCE_DIR>" -Dgtk_doc=false
                                       BUILD_COMMAND cd "<BINARY_DIR>" && ninja
                                       CONFIGURE_HANDLED_BY_BUILD ON
@@ -120,24 +120,30 @@ else()
     # Disable linting for fetch content projects
     clear_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)
 
+    set(ENABLE_WEBSOCKETS ON CACHE INTERNAL ON FORCE)
     FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/libcpr/cpr.git
-                             GIT_TAG 1750af467726733b0ccd0fc84a3fe32ab5b0612d
-                             PATCH_COMMAND "git" "reset" "--hard" "&&" "git" "apply" "${CMAKE_SOURCE_DIR}/cmake/cpr_patch.patch")
+                             GIT_TAG 6b3e3531d3e5781b4b19e7cf64ed76035bf59d37)
     set(CPR_BUILD_TESTS OFF CACHE INTERNAL " " FORCE)
     set(CURL_CA_FALLBACK ON CACHE INTERNAL " " FORCE) # Workaround for failing SSL requests
     FetchContent_MakeAvailable(cpr)
 
     FetchContent_Declare(json GIT_REPOSITORY https://github.com/nlohmann/json.git
-                              GIT_TAG v3.10.5)
+                              GIT_TAG v3.11.2)
     FetchContent_MakeAvailable(json)
 
     set(SPDLOG_INSTALL ON CACHE INTERNAL " " FORCE)
     FetchContent_Declare(spdlog GIT_REPOSITORY https://github.com/gabime/spdlog.git
-                                GIT_TAG v1.9.2)
+                                GIT_TAG v1.12.0)
     FetchContent_MakeAvailable(spdlog)
 
+    # Abseil is required for re2
+    set(ABSL_ENABLE_INSTALL ON CACHE INTERNAL " " FORCE)
+    FetchContent_Declare(abseil GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
+                                GIT_TAG 20230802.1)
+    FetchContent_MakeAvailable(abseil)
+
     FetchContent_Declare(re2 GIT_REPOSITORY https://github.com/google/re2.git
-                             GIT_TAG 2023-03-01)
+                             GIT_TAG 2023-11-01)
     FetchContent_MakeAvailable(re2)
 
     set(BUILD_TZ_LIB ON CACHE INTERNAL " " FORCE)
@@ -147,7 +153,7 @@ else()
 
     FetchContent_Declare(eventpp
                          GIT_REPOSITORY https://github.com/wqking/eventpp.git
-                         GIT_TAG 6813ec217f8489d8105d52008c8aca11093fb749) # State on master from the 28.09.2022
+                         GIT_TAG v0.1.3)
     FetchContent_MakeAvailable(eventpp)
 
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)

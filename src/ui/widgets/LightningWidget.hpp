@@ -5,7 +5,11 @@
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/image.h>
 #include <gtkmm/overlay.h>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wignored-qualifiers"
 #include <shumate/shumate.h>
+#pragma GCC diagnostic pop
 
 namespace ui::widgets {
 class LightningWidget : public Gtk::Overlay {

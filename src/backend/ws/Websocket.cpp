@@ -21,7 +21,8 @@ Websocket::~Websocket() {
 
 void Websocket::start() {
     std::unique_lock lock(wsMutex);
-    assert(!shouldRun);
+    if (shouldRun) { return; }
+    assert(!wsThread);
 
     SPDLOG_INFO("Starting websocket for '{}'...", url);
     shouldRun = true;
@@ -30,6 +31,9 @@ void Websocket::start() {
 
 void Websocket::stop() {
     std::unique_lock lock(wsMutex);
+    if (!shouldRun) { return; }
+    assert(wsThread);
+
     SPDLOG_INFO("Stopping websocket for '{}'...", url);
     shouldRun = false;
     wsThread->join();
@@ -63,7 +67,7 @@ bool Websocket::recv_any() {
     std::array<char, CHUNK_SIZE> buffer{};
 
     size_t recvLen{0};
-    curl_ws_frame* meta{nullptr};
+    const curl_ws_frame* meta{nullptr};
 
     while (true) {
         CURLcode ret = curl_ws_recv(curl, buffer.data(), buffer.size(), &recvLen, &meta);

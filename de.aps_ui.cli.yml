@@ -35,7 +35,7 @@ modules:
         sources:
           - type: git
             url: https://github.com/libcpr/cpr.git
-            commit: 1750af467726733b0ccd0fc84a3fe32ab5b0612d
+            commit: 6b3e3531d3e5781b4b19e7cf64ed76035bf59d37
           - type: patch
             path: cmake/cpr_patch.patch
             use-git: true
@@ -49,8 +49,8 @@ modules:
         sources:
           - type: git
             url: https://github.com/nlohmann/json.git
-            tag: v3.10.5
-            commit: 4f8fba14066156b73f1189a2b8bd568bde5284c5
+            tag: v3.11.2
+            commit: bc889afb4c5bf1c0d8ee29ef35eaaf4c8bef8a5d
       - name: spdlog
         buildsystem: cmake-ninja
         config-opts:
@@ -61,8 +61,8 @@ modules:
         sources:
           - type: git
             url: https://github.com/gabime/spdlog.git
-            tag: v1.9.2
-            commit: eb3220622e73a4889eee355ffa37972b3cac3df5
+            tag: v1.12.0
+            commit: 7e635fca68d014934b4af8a1cf874f63989352b7
       - name: eventpp
         buildsystem: cmake-ninja
         config-opts:
@@ -71,7 +71,8 @@ modules:
         sources:
           - type: git
             url: https://github.com/wqking/eventpp.git
-            commit: 6813ec217f8489d8105d52008c8aca11093fb749
+            tag: v0.1.3
+            commit: d2db8af2a46c79f8dc75759019fba487948e9442
       - name: re2
         buildsystem: cmake-ninja
         config-opts:
@@ -80,15 +81,28 @@ modules:
         sources:
           - type: git
             url: https://github.com/google/re2.git
-            commit: 5723bb8950318135ed9cf4fc76bed988a087f536
+            tag: 2023-11-01
+            commit: bc0faab533e2b27b85b8ad312abf061e33ed6b5d
+        modules:
+          - name: abseil
+            buildsystem: cmake-ninja
+            config-opts:
+              - -DCMAKE_BUILD_TYPE=Release
+              - -DABSL_BUILD_TESTING=OFF
+              - -DABSL_ENABLE_INSTALL=ON
+            sources:
+              - type: git
+                url: https://github.com/abseil/abseil-cpp.git
+                tag: 20230802.1
+                commit: fb3621f4f897824c0dbe0615fa94543df6192f30
       - name: shumate
         buildsystem: meson
         config-opts:
           - -Dgtk_doc=false
         sources:
           - type: archive
-            url: https://download.gnome.org/sources/libshumate/1.0/libshumate-1.0.3.tar.xz
-            sha256: 77a192f0dfec082b8de20b1939f3adf03eed41114d49fdaae2bbb2729ceb015a
+            url: https://download.gnome.org/sources/libshumate/1.1/libshumate-1.1.1.tar.xz
+            sha256: 37ac753c79410aaa1e57f4c051701b06f40991c418fb511aedc11a79b790fc04
         cleanup:
           - /include
       - name: date

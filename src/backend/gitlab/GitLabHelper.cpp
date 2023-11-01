@@ -16,7 +16,7 @@ std::string parse_state(std::string_view part) {
     re2::StringPiece result;
 
     if (RE2::PartialMatch(part, stateRegex, &result)) {
-        return result.ToString();
+        return std::string{result};
     }
     SPDLOG_ERROR("Error parsing GitLab runner state from '{}'.", part);
     return "";
