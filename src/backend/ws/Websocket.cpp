@@ -47,8 +47,24 @@ void Websocket::thread_run() {
     while (shouldRun) {
         // Connect:
         connected = false;
+
+        std::chrono::seconds exponentialBackoff{1};
+
         while (!connected && shouldRun) {
             connected = curl_connect();
+
+            if (!connected && shouldRun) {
+                if (exponentialBackoff < std::chrono::seconds{60}) {
+                    exponentialBackoff *= 2;
+                }
+                SPDLOG_INFO("Websocket exponential backoff of {}s for '{}' started.", exponentialBackoff.count(), url);
+
+                // Perform exponential backoff
+                std::chrono::system_clock::time_point start = std::chrono::system_clock::now();
+                do {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+                } while (shouldRun && (std::chrono::system_clock::now() - start) < exponentialBackoff);
+            }
         }
 
         // Send/Receive:
