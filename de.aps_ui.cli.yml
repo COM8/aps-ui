@@ -38,6 +38,20 @@ modules:
             commit: 6b3e3531d3e5781b4b19e7cf64ed76035bf59d37
         cleanup:
           - /include
+        modules:
+          - name: curl
+            buildsystem: cmake-ninja
+            config-opts:
+              - -DCURL_ENABLE_SSL=ON
+              - -DCURL_USE_OPENSSL=ON
+              - -DBUILD_TESTING=OFF
+              - -DBUILD_CURL_EXE=OFF
+              - -DENABLE_WEBSOCKETS=ON
+            sources:
+              - type: git
+                url: https://github.com/curl/curl.git
+                tag: curl-8_4_0
+                commit: d755a5f7c009dd63a61b2c745180d8ba937cbfeb
       - name: nlohmann-json
         buildsystem: cmake-ninja
         config-opts:
