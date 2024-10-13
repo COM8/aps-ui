@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <component type="desktop">
-  <!--Created with jdAppdataEdit 3.0-->
+  <!--Created with
+  jdAppdataEdit 3.0-->
   <id>de.aps_ui.cli</id>
   <name>Aps UI</name>
   <summary>GTK4 Based UI for Stats all Around AP Sensing in Böblingen using a Raspberry Pi.</summary>
@@ -29,10 +30,11 @@
     <control>tablet</control>
     <control>touch</control>
   </supports>
-  <content_rating type="oars-1.1"/>
+  <content_rating type="oars-1.1" />
   <keywords>
     <keyword>aps-ui</keyword>
     <keyword>raspberry</keyword>
     <keyword>automation</keyword>
   </keywords>
+  <icon type="stock">de.aps_ui.cli</icon>
 </component>

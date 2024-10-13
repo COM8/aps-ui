@@ -96,7 +96,7 @@ else()
     endif()
 
     ExternalProject_Add(shumate_build GIT_REPOSITORY https://gitlab.gnome.org/GNOME/libshumate.git
-                                      GIT_TAG 1.1.1
+                                      GIT_TAG 1.3.0
                                       CONFIGURE_COMMAND ${MESON_PATH} "<BINARY_DIR>" "<SOURCE_DIR>" -Dgtk_doc=false
                                       BUILD_COMMAND cd "<BINARY_DIR>" && ninja
                                       CONFIGURE_HANDLED_BY_BUILD ON
@@ -122,38 +122,37 @@ else()
 
     set(ENABLE_WEBSOCKETS ON CACHE INTERNAL ON FORCE)
     FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/libcpr/cpr.git
-                             GIT_TAG 6b3e3531d3e5781b4b19e7cf64ed76035bf59d37)
+                             GIT_TAG 1.11.0)
     set(CPR_BUILD_TESTS OFF CACHE INTERNAL " " FORCE)
     set(CURL_CA_FALLBACK ON CACHE INTERNAL " " FORCE) # Workaround for failing SSL requests
     FetchContent_MakeAvailable(cpr)
 
     FetchContent_Declare(json GIT_REPOSITORY https://github.com/nlohmann/json.git
-                              GIT_TAG v3.11.2)
+                              GIT_TAG v3.11.3)
     FetchContent_MakeAvailable(json)
 
     set(SPDLOG_INSTALL ON CACHE INTERNAL " " FORCE)
     FetchContent_Declare(spdlog GIT_REPOSITORY https://github.com/gabime/spdlog.git
-                                GIT_TAG v1.12.0)
+                                GIT_TAG v1.14.1)
     FetchContent_MakeAvailable(spdlog)
 
     # Abseil is required for re2
     set(ABSL_ENABLE_INSTALL ON CACHE INTERNAL " " FORCE)
     FetchContent_Declare(abseil GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
-                                GIT_TAG 20230802.1)
+                                GIT_TAG 20240722.0)
     FetchContent_MakeAvailable(abseil)
 
     FetchContent_Declare(re2 GIT_REPOSITORY https://github.com/google/re2.git
-                             GIT_TAG 2023-11-01)
+                             GIT_TAG 2024-07-02)
     FetchContent_MakeAvailable(re2)
 
     set(BUILD_TZ_LIB ON CACHE INTERNAL " " FORCE)
     FetchContent_Declare(date GIT_REPOSITORY https://github.com/HowardHinnant/date.git
-                              GIT_TAG cc4685a21e4a4fdae707ad1233c61bbaff241f93)
+                              GIT_TAG v3.0.2)
     FetchContent_MakeAvailable(date)
 
-    FetchContent_Declare(eventpp
-                         GIT_REPOSITORY https://github.com/wqking/eventpp.git
-                         GIT_TAG v0.1.3)
+    FetchContent_Declare(eventpp GIT_REPOSITORY https://github.com/wqking/eventpp.git
+                                 GIT_TAG v0.1.3)
     FetchContent_MakeAvailable(eventpp)
 
     restore_variable(DESTINATION CMAKE_CXX_CLANG_TIDY BACKUP CMAKE_CXX_CLANG_TIDY_BKP)

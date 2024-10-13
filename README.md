@@ -31,14 +31,14 @@ The aps-ui can be built and installed using Flatpak.
 ```
 sudo dnf install flatpak flatpak-builder
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install flathub org.gnome.Sdk/43 org.gnome.Platform/43
+flatpak install -y flathub runtime/org.gnome.Sdk/$(arch)/47 runtime/org.gnome.Platform/$(arch)/47
 ```
 
 #### Debian/Ubuntu
 ```
 sudo apt install flatpak flatpak-builder
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install flathub org.gnome.Sdk/43 org.gnome.Platform/43
+flatpak install -y flathub runtime/org.gnome.Sdk/$(arch)/47 runtime/org.gnome.Platform/$(arch)/47
 ```
 
 ### Building
@@ -60,7 +60,7 @@ In case you would like to cross-compile for the Raspberry Pi (aarch64), this can
 sudo dnf install qemu-system-arm qemu-user-static
 sudo systemctl restart systemd-binfmt.service
 
-flatpak install flathub org.gnome.Sdk/aarch64/43 org.gnome.Platform/aarch64/43
+flatpak install flathub runtime/org.gnome.Sdk/aarch64/47 runtime/org.gnome.Platform/aarch64/47
 flatpak-builder --arch=aarch64 --repo=repo --force-clean flatpak_build_dir de.aps_ui.cli.yml
 flatpak build-bundle --arch=aarch64 ./repo/ de.aps_ui.cli.flatpak de.aps_ui.cli
 
