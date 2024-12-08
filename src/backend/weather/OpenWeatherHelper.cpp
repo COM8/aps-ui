@@ -6,20 +6,20 @@
 
 namespace backend::weather {
 cpr::Url build_url(const std::string& lat, const std::string& lon, const std::string& apiKey) {
-    return cpr::Url("https://api.openweathermap.org/data/2.5/onecall?lat=" + lat + "&lon=" + lon + "&exclude=minutely&units=metric&appid=" + apiKey);
+    return cpr::Url("https://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&units=metric&appid=" + apiKey);
 }
 
-std::shared_ptr<Forecast> parse_response(const std::string& response) {
+std::shared_ptr<ThreeHourForecast> parse_response(const std::string& response) {
     try {
         nlohmann::json j = nlohmann::json::parse(response);
-        return std::make_shared<Forecast>(Forecast::from_json(j));
+        return std::make_shared<ThreeHourForecast>(ThreeHourForecast::from_json(j));
     } catch (nlohmann::json::parse_error& e) {
         SPDLOG_ERROR("Error parsing weather from '{}' with: {}", response, e.what());
     }
     return nullptr;
 }
 
-std::shared_ptr<Forecast> request_weather(const std::string& lat, const std::string& lon, const std::string& apiKey) {
+std::shared_ptr<ThreeHourForecast> request_weather(const std::string& lat, const std::string& lon, const std::string& apiKey) {
     cpr::Session session;
     session.SetUrl(build_url(lat, lon, apiKey));
 

@@ -75,9 +75,6 @@ void MainWindow::prep_overview_stack_page(Gtk::Stack* stack) {
     leftBottomBox->set_hexpand(true);
     leftBottomBox->set_halign(Gtk::Align::CENTER);
 
-    // Teams:
-    leftBottomBox->append(teams);
-
     // Quick actions:
     leftBottomBox->append(quickActionsBox);
     quickActionsBox.set_halign(Gtk::Align::CENTER);

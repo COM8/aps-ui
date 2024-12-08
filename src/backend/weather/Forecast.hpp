@@ -6,17 +6,6 @@
 #include <vector>
 
 namespace backend::weather {
-struct Temp {
-    double min;
-    double max;
-    double day;
-    double night;
-    double eve;
-    double morn;
-
-    static Temp from_json(const nlohmann::json& j);
-} __attribute__((aligned(64)));
-
 struct Weather {
     int id;
     std::string main;
@@ -26,32 +15,19 @@ struct Weather {
     static Weather from_json(const nlohmann::json& j);
 } __attribute__((aligned(128)));
 
-struct Day {
-    std::chrono::system_clock::time_point time;
-    Temp temp;
-    Weather weather;
-    double rain;
-
-    static Day from_json(const nlohmann::json& j);
-};
-
-struct Hour {
-    std::chrono::system_clock::time_point time;
-    double temp;
-    double feelsLike;
-    Weather weather;
-
-    static Hour from_json(const nlohmann::json& j);
-};
-
 struct Forecast {
-    double temp;
-    double feelsLike;
     Weather weather;
-
-    std::vector<Day> daily;
-    std::vector<Hour> hourly;
+    std::chrono::system_clock::time_point time;
+    double temp{};
+    double feelsLike{};
 
     static Forecast from_json(const nlohmann::json& j);
-} __attribute__((aligned(64)));
+};
+
+struct ThreeHourForecast {
+    std::vector<Forecast> forecast;
+
+    static ThreeHourForecast from_json(const nlohmann::json& j);
+} __attribute__((aligned(32)));
+
 }  // namespace backend::weather

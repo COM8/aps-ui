@@ -32,7 +32,7 @@ class WeatherWidget : public Gtk::Box {
     bool shouldRun{false};
     std::unique_ptr<std::thread> updateThread{nullptr};
     Glib::Dispatcher disp;
-    std::shared_ptr<backend::weather::Forecast> forecast{nullptr};
+    std::shared_ptr<backend::weather::ThreeHourForecast> forecast{nullptr};
     std::mutex forecastMutex{};
 
  public:

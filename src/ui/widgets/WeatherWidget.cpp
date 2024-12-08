@@ -85,30 +85,30 @@ void WeatherWidget::prep_widget() {
 }
 
 void WeatherWidget::update_weather_ui() {
-    if (!forecast) {
+    if (!forecast || forecast->forecast.empty()) {
         return;
     }
 
     // Add new items:
     forecastMutex.lock();
     // Current:
-    Glib::RefPtr<Gdk::Pixbuf> currentImagePixBuf = Gdk::Pixbuf::create_from_resource("/ui/openWeather/4x/" + forecast->weather.icon + ".png");
+    Glib::RefPtr<Gdk::Pixbuf> currentImagePixBuf = Gdk::Pixbuf::create_from_resource("/ui/openWeather/4x/" + forecast->forecast[0].weather.icon + ".png");
     currentImagePixBuf = scale_image(currentImagePixBuf, 1.0);
     currentImage.set(currentImagePixBuf);
 
-    currentDescription.set_label(forecast->weather.description);
-    currentTemp.set_text(std::to_string(static_cast<int>(std::round(forecast->temp))) + "°C (" + std::to_string(static_cast<int>(std::round(forecast->feelsLike))) + "°C)");
+    currentDescription.set_label(forecast->forecast[0].weather.description);
+    currentTemp.set_text(std::to_string(static_cast<int>(std::round(forecast->forecast[0].temp))) + "°C (" + std::to_string(static_cast<int>(std::round(forecast->forecast[0].feelsLike))) + "°C)");
 
     // Today:
-    const backend::weather::Day* todayWeather = (forecast->daily).data();
-    Glib::RefPtr<Gdk::Pixbuf> todayImagePixBuf = Gdk::Pixbuf::create_from_resource("/ui/openWeather/4x/" + todayWeather->weather.icon + ".png");
-    todayImagePixBuf = scale_image(todayImagePixBuf, 1.0);
-    todayImage.set(todayImagePixBuf);
-    todayDescription.set_label(todayWeather->weather.description);
-    todayMinmaxColorTemp.set_label("Min: " + std::to_string(static_cast<int>(std::round(todayWeather->temp.min))) + "°C Max: " + std::to_string(static_cast<int>(std::round(todayWeather->temp.max))) + "°C");
+    // const backend::weather::Forecast* todayWeather = (forecast->daily).data();
+    // Glib::RefPtr<Gdk::Pixbuf> todayImagePixBuf = Gdk::Pixbuf::create_from_resource("/ui/openWeather/4x/" + todayWeather->weather.icon + ".png");
+    // todayImagePixBuf = scale_image(todayImagePixBuf, 1.0);
+    // todayImage.set(todayImagePixBuf);
+    // todayDescription.set_label(todayWeather->weather.description);
+    // todayMinmaxColorTemp.set_label("Min: " + std::to_string(static_cast<int>(std::round(todayWeather->temp.min))) + "°C Max: " + std::to_string(static_cast<int>(std::round(todayWeather->temp.max))) + "°C");
 
     // Suggested Outfit:
-    std::string outfit;
+    /*std::string outfit;
     if (todayWeather->rain > 0) {
         outfit += "☔\n";
     }
@@ -120,7 +120,7 @@ void WeatherWidget::update_weather_ui() {
     } else {
         outfit += "🧥\n👖";
     }
-    suggestedOutfit.set_markup("<span size='x-large'>" + outfit + "</span>");
+    suggestedOutfit.set_markup("<span size='x-large'>" + outfit + "</span>");*/
 
     // Course:
     // Clear existing items:
@@ -133,7 +133,7 @@ void WeatherWidget::update_weather_ui() {
     uint8_t curHour = get_hour_of_the_day(curTime);
     std::chrono::system_clock::time_point curDays = std::chrono::floor<days>(curTime);
     // Add new items:
-    for (const backend::weather::Hour& hour : forecast->hourly) {
+    for (const backend::weather::Forecast& hour : forecast->forecast) {
         // Show only those in the future and for the next 24 hours:
         std::chrono::system_clock::time_point weatherTime = to_local_time(hour.time);
         uint8_t weatherHour = get_hour_of_the_day(weatherTime);
@@ -183,7 +183,7 @@ std::chrono::system_clock::time_point WeatherWidget::to_local_time(const std::ch
 void WeatherWidget::update_weather() {
     SPDLOG_INFO("Updating weather...");
 
-    std::shared_ptr<backend::weather::Forecast> forecast{nullptr};
+    std::shared_ptr<backend::weather::ThreeHourForecast> forecast{nullptr};
     try {
         const backend::storage::SettingsData* settings = &(backend::storage::get_settings_instance()->data);
         forecast = backend::weather::request_weather(settings->weatherLat, settings->weatherLong, settings->openWeatherApiKey);
