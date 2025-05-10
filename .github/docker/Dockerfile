@@ -1,5 +1,5 @@
-# Base on Fedora 38
-FROM fedora:41
+# Base on Fedora:latest
+FROM fedora:latest
 # Make sure all sources are up to date
 RUN dnf update -y && \
     dnf install -y \ 

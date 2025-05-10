@@ -9,7 +9,7 @@ GTK4 Based UI for Stats all Around AP Sensing in Böblingen using a Raspberry Pi
 ### Requirements
 #### Fedora
 ```
-sudo dnf install gtkmm4.0-devel libadwaita-devel libcurl-devel g++ clang cmake git
+sudo dnf install gtkmm4.0-devel libadwaita-devel libcurl-devel g++ clang cmake git protobuf-c-devel
 sudo dnf install libsoup3-devel sqlite-devel ninja-build meson
 ```
 
