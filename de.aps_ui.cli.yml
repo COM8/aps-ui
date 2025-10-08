@@ -84,6 +84,7 @@ modules:
         config-opts:
           - -DCMAKE_BUILD_TYPE=Release
           - -DRE2_BUILD_TESTING=OFF
+          - -DRE2_TEST=OFF
         sources:
           - type: git
             url: https://github.com/google/re2.git
@@ -122,6 +123,8 @@ modules:
             modules:
               - name: protobuf
                 buildsystem: cmake-ninja
+                config-opts:
+                  - -Dprotobuf_BUILD_TESTS=OFF
                 builddir: true
                 sources:
                   - type: git
