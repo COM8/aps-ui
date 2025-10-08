@@ -122,7 +122,7 @@ else()
 
     set(ENABLE_WEBSOCKETS ON CACHE INTERNAL ON FORCE)
     FetchContent_Declare(cpr GIT_REPOSITORY https://github.com/libcpr/cpr.git
-                             GIT_TAG 1.11.2)
+                             GIT_TAG 1.12.0)
     set(CPR_BUILD_TESTS OFF CACHE INTERNAL " " FORCE)
     set(CURL_CA_FALLBACK ON CACHE INTERNAL " " FORCE) # Workaround for failing SSL requests
     FetchContent_MakeAvailable(cpr)
