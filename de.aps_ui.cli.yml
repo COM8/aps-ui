@@ -34,7 +34,7 @@ modules:
         sources:
           - type: git
             url: https://github.com/libcpr/cpr.git
-            tag: 1.11.2
+            tag: 1.12.0
         cleanup:
           - /include
         modules:
@@ -49,7 +49,7 @@ modules:
             sources:
               - type: git
                 url: https://github.com/curl/curl.git
-                tag: curl-8_10_1
+                tag: curl-8_13_0
       - name: nlohmann-json
         buildsystem: cmake-ninja
         config-opts:
@@ -84,6 +84,7 @@ modules:
         config-opts:
           - -DCMAKE_BUILD_TYPE=Release
           - -DRE2_BUILD_TESTING=OFF
+          - -DRE2_TEST=OFF
         sources:
           - type: git
             url: https://github.com/google/re2.git
@@ -122,6 +123,8 @@ modules:
             modules:
               - name: protobuf
                 buildsystem: cmake-ninja
+                config-opts:
+                  - -Dprotobuf_BUILD_TESTS=OFF
                 builddir: true
                 sources:
                   - type: git
